@@ -6,3 +6,5 @@ it will register blueprints from routes/
 it will load configurations from config.py
 
 '''
+
+from flask import Flask
