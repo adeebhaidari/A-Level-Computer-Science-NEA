@@ -1,0 +1,150 @@
+Backend organization
+backend/app.py
+
+Main Flask app starter.
+
+Registers blueprints from routes/.
+
+Loads configuration from config.py.
+
+from flask import Flask
+from backend.routes import account_routes, solver_routes, training_routes
+
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object('backend.config.Config')
+
+    # Register Blueprints
+    app.register_blueprint(account_routes.bp, url_prefix='/account')
+    app.register_blueprint(solver_routes.bp, url_prefix='/solver')
+    app.register_blueprint(training_routes.bp, url_prefix='/training')
+
+    return app
+
+if __name__ == "__main__":
+    app = create_app()
+    app.run(debug=True)
+
+backend/config.py
+
+Keep database path and secret keys here:
+
+class Config:
+    DATABASE = 'backend/database/cubing.db'
+    SECRET_KEY = 'your_secret_key_here'
+
+backend/database/
+
+db_setup.py → creates SQLite database and tables.
+
+models.py → contains all SQL queries as functions.
+
+Example: get user by email, insert solve, update stats.
+
+Tip: This is where you can showcase SQL knowledge in your NEA.
+
+backend/routes/
+
+Each file defines a blueprint with REST API endpoints.
+
+Example: account_routes.py handles login, registration, user settings.
+
+solver_routes.py → handles cube solving requests, returns moves in JSON.
+
+training_routes.py → handles stats, averages, graphs.
+
+backend/Cube/
+
+cube.py → defines Cube class with state as a 3D array.
+
+cube_validator.py → checks if cube is solvable.
+
+cube_visualiser.py → sends cube state to frontend (JSON).
+
+camera_scanner.py → OpenCV module to detect cube colors (optional for NEA).
+
+backend/Solver/
+
+astar_solver.py → implements A* logic.
+
+solver.py → interface that takes a cube state and method, returns solution moves.
+
+backend/Training/
+
+statistics.py → calculates averages, PB, rolling averages.
+
+timer.py → handles timing logic for solves.
+
+backend/Learning/
+
+learning_module.py → algorithm teaching module (notation + sequences).
+
+tutorial.py → step-by-step tutorials or guided lessons.
+
+backend/Account_Management/
+
+authentication.py → login/logout, password hashing.
+
+user_account.py → CRUD for user profiles.
+
+user_settings.py → preferences, display options, etc.
+
+Frontend organization (frontend/src/components)
+
+Each Vue component is self-contained:
+
+Cube3D.vue → 3D cube (three.js)
+
+Timer.vue → solve timer
+
+Stats.vue → line/graph stats using Chart.js or similar
+
+Login.vue → login/signup forms
+
+Tutorial.vue → interactive algorithm guide
+
+App.vue → main app shell.
+main.js → mounts app, sets up router & store (if using Vuex for state).
+
+---
+
+Workflow for development
+
+Database first
+
+Implement SQLite tables + seed some test data.
+
+Write and test SQL queries in models.py.
+---
+
+Backend routes
+
+Test endpoints in Postman first.
+
+Example: POST /account/register, GET /training/stats.
+---
+
+Frontend
+
+Build static components first (no API connection yet).
+
+Add dynamic behavior by connecting Vue to Flask endpoints via fetch or axios.
+---
+
+Cube logic
+
+Implement Cube class, validator, visualiser.
+
+Add basic solving algorithm (A* for cross/F2L).
+---
+
+Stats + learning module
+
+Integrate timing, store solves in SQLite, calculate averages, graphs.
+---
+
+OpenCV scanner → auto-detect cube state.
+
+Advanced A* heuristics for intermediate/advanced cubers.
+
+---

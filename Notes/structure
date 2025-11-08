@@ -1,0 +1,113 @@
+project_root/
+│
+├── backend/
+│   ├── app.py
+│   ├── __init__.py
+│   ├── config.py
+│   │
+│   ├── Account_Management/
+│   │   ├── authentication.py
+│   │   ├── user_account.py
+│   │   └── user_settings.py
+│   │
+│   ├── Algorithms/
+│   │   └── algorithm_library.py
+│   │
+│   ├── Cube/
+│   │   ├── camera_scanner.py
+│   │   ├── cube_validator.py
+│   │   ├── cube_visualiser.py
+│   │   └── cube.py
+│   │
+│   ├── Learning/
+│   │   ├── learning_module.py
+│   │   └── tutorial.py
+│   │
+│   ├── Solver/
+│   │   ├── astar_solver.py
+│   │   └── solver.py
+│   │
+│   ├── Training/
+│   │   ├── statistics.py
+│   │   └── timer.py
+│   │
+│   ├── database/
+│   │   ├── db_setup.py
+│   │   └── models.py
+│   │
+│   ├── routes/
+│   │   ├── account_routes.py
+│   │   ├── solver_routes.py
+│   │   ├── training_routes.py
+│   │   └── __init__.py
+│   │
+│   ├── utils/
+│   │   └── helpers.py
+│   │
+│   └── test/
+│       └── test_all.py
+│
+└── frontend/
+    ├── src/
+    │   ├── components/
+    │   │   ├── Timer.vue
+    │   │   ├── Stats.vue
+    │   │   ├── Cube3D.vue
+    │   │   ├── Login.vue
+    │   │   └── Tutorial.vue
+    │   ├── App.vue
+    │   └── main.js
+    └── package.json
+
+
+Project Overview
+
+Full-stack web application for speedcubing training and analysis.
+It includes:
+
+A frontend (user interface) built in modern web tech.
+
+A backend that handles cube solving, training stats, and user data.
+
+A database for persistent storage of solves, settings, and progress.
+
+Tech Stack Summary
+Layer	Tool / Framework	Language	Purpose
+Frontend (Presentation Layer)	Vue.js	JavaScript / TypeScript	Framework for building an interactive, component-based user interface (timer, stats, cube visualiser, etc.). Handles all user interactions and sends data to the Flask backend.
+	HTML / CSS	—	Structure and styling of the website. CSS defines the layout and design; HTML provides the basic page framework.
+	Chart.js or Recharts (optional)	JavaScript	Used to visualise training data (e.g. averages, progress charts, regression predictions).
+	three.js (optional)	JavaScript	For 3D cube visualisation (rotating cube, showing solver steps).
+Backend (Logic Layer)	Flask	Python	Lightweight web framework that connects your backend logic (solvers, statistics, etc.) to the frontend. It exposes API endpoints like /api/add_time or /api/solve_cube.
+	Your Python modules (e.g. Solver, Cube, Training)	Python	Contain the core logic — A* algorithm, regression analysis, cube validation, etc. Flask will import and use these internally.
+Database (Data Layer)	SQLite / MySQL	SQL	Stores user info, solves, training data, averages, and predictions. Flask connects to this via SQL queries or SQLAlchemy.
+Machine Learning / Algorithms	—	Python	Implements algorithms such as A* for cube solving and Linear Regression for performance prediction.
+Version Control & Deployment (optional)	Git / GitHub	—	For version tracking, documentation, and project backups. (You can include this in your evaluation for maintainability marks.)
+
+How They Work Together
+1. Frontend (Vue.js + JS)
+
+User interacts with timer, visualiser, and training interface.
+
+Sends data (solve times, cube states) to Flask using HTTP requests.
+
+Displays responses (like stats or solutions) dynamically.
+
+2. Backend (Flask + Python Modules)
+
+Flask receives requests from Vue.
+
+Passes data to your backend classes — e.g. A* solver, statistics, or learning module.
+
+Returns the processed results (as JSON) back to the frontend.
+
+3. Database (SQL)
+
+Flask stores and retrieves data via SQL.
+
+Handles persistent information such as:
+
+Users and authentication details
+
+Solves (scramble + time + date)
+
+Training progress and stats

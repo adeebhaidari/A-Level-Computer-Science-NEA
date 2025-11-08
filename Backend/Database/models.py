@@ -1,0 +1,1 @@
+# will contain all SQL queies as functions
