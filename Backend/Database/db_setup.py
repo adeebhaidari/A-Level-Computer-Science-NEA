@@ -1,55 +1,73 @@
-# create SQLite database and tables etc
 import sqlite3
 from pprint import pprint as pp
 
-# this creates a new database and connects to it if it doesnt already exist
-# else it will just connect to that existing one
-connection = sqlite3.connect('SpeedCubing.db')
+def setup_database(db_path='speedcubing.db'):
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+    
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS Users (
+        UserID INTEGER PRIMARY KEY AUTOINCREMENT,
+        Forename TEXT NOT NULL,
+        Middlename TEXT,
+        Surname TEXT NOT NULL,
+        EmailAddress TEXT NOT NULL UNIQUE,
+        HashedPassword TEXT NOT NULL,
+        JoinDate TEXT NOT NULL
+    );''')
+    
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS FullSolves (
+        SolveID INTEGER PRIMARY KEY AUTOINCREMENT,
+        UserID INTEGER NOT NULL,
+        Time REAL NOT NULL,
+        MethodID INTEGER NOT NULL,
+        State TEXT,
+        Scramble TEXT NOT NULL,
+        CubeBrand TEXT,
+        SolveDate TEXT NOT NULL,
+        FOREIGN KEY (UserID) REFERENCES Users(UserID),
+        FOREIGN KEY (MethodID) REFERENCES Methods(MethodID)
+    );''')
+    
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS AlgorithmPractiseSolves (
+        PractiseID INTEGER PRIMARY KEY AUTOINCREMENT,
+        UserID INTEGER NOT NULL,
+        AlgorithmID INTEGER NOT NULL,
+        Time REAL NOT NULL,
+        SolveDate TEXT NOT NULL,
+        Notes TEXT,
+        FOREIGN KEY (UserID) REFERENCES Users(UserID),
+        FOREIGN KEY (AlgorithmID) REFERENCES Algorithms(AlgorithmID)
+    );''')
 
-# creates a cursor to do all kinds of things e.g. create a table
-cursor = connection.cursor()
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS Methods (
+        MethodID INTEGER PRIMARY KEY AUTOINCREMENT,
+        Name TEXT NOT NULL
+    );''')
 
-# creating the tables in the database
-# form: name, datatype
-# the user ID which is the primary key is automatically made with SQLite3, you need to specify it yourself when wanting to look at the database
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS Users (
-    UserID INTEGER PRIMARY KEY AUTOINCREMENT,
-    Forename TEXT,
-    Middlename TEXT,
-    Surname TEXT,
-    EmailAddress TEXT,
-    HashedPassword TEXT,
-    JoinDate TEXT
-)''')
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS AlgorithmCategories (
+        CategoryID INTEGER PRIMARY KEY AUTOINCREMENT,
+        MethodID INTEGER NOT NULL,
+        Name TEXT NOT NULL,
+        FOREIGN KEY (MethodID) REFERENCES Methods(MethodID)
+    );''')
+    
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS Algorithms (
+        AlgorithmID INTEGER PRIMARY KEY AUTOINCREMENT,
+        CategoryID INTEGER NOT NULL,
+        Name TEXT NOT NULL,
+        Notation TEXT NOT NULL,
+        FOREIGN KEY (CategoryID) REFERENCES AlgorithmCategories(CategoryID)
+    );''')
 
-many_users = [('Bob', 'None', 'Bill', 'bob@yahoo.com', 'passss', '13/05/25'),
-              ('John', 'David', 'Howard', 'john@yahoo.com', 'nooneknows', '14/05/25'),
-              ('Eve', 'Sanderson', 'John', 'eve@gmail.com', 'cubing!!', '16/08/25')]
+    connection.commit()
+    connection.close()
 
-cursor.executemany('''
-                   INSERT INTO Users (Forename, Middlename, Surname, EmailAddress, HashedPassword, JoinDate) 
-                   VALUES (?,?,?,?,?,?)''', 
-                   many_users)
-
-# query the database
-cursor.execute('''
-               SELECT * 
-               FROM Users 
-               WHERE rowid > 1''')
-
-'''
-pp(cursor.fetchone()) returns the first one
-pp(cursor.fetchmany(2)) returns the first x amount you specify
-pp(cursor.fetchall())
-'''
-
-# formatting results
-data_items = cursor.fetchall() # a list of tuples now!
-for item in data_items:
-    pp(item)
-    # pp(item[1]) # as this is a tuple, you can index it like normal
-
-# this commits the command, now we can close the connect if you want to
-connection.commit()
-connection.close()
+if __name__ == '__main__':
+    setup_database()
+    print('Database setup complete.')

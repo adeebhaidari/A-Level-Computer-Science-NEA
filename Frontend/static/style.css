@@ -15,7 +15,19 @@
     100% { transform: translateY(0); }
 }
 
-body {
+@keyframes button-hover {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(3px); }
+}
+
+html, body {
+    height:100%;
+    margin:0;
+    padding:0;
+    overflow-x:hidden;
+}
+
+main {
     font-family: 'mainfont', sans-serif;
     font-weight: bold;
     background-image: url('/static/home-background.jpg');
@@ -30,32 +42,40 @@ body {
 }
 
 #home-intro {
-    margin-top:10%;
+    margin-top:5%;
     padding:20px 20px;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-radius:20px;
-    box-shadow:0 0 6px 6px rgba(99, 140, 255, 0.564);
-    animation: sway 5s ease-in-out infinite;   
+    box-shadow:0 0 6px 6px rgba(0, 57, 215, 0.564);  
 }
 
 #home-intro > h1 {
-    font-size:5em;
+    font-size:7em;
+    animation: sway 5s ease-in-out infinite; 
+}
+
+#home-intro > h3 {
+    font-size:3em;
+    animation:sway 5s ease-in-out infinite;
 }
 
 .home-button {
     font-size:17px;
     font-weight:thin;
-    padding:5px 5px;
+    padding:7px 7px;
     border-radius:5px;
     background-color:rgb(156, 156, 156);
     color:rgb(0, 0, 0);
     border:none;
     transition: font-size 0.3s ease-out, box-shadow 0.3s ease-out;
+    font-family:'mainfont', sans-serif;
+    font-weight:thin;
 }
 
 .home-button:hover {
-    font-size:20px;
+    font-size:25px;
     cursor:pointer;
     box-shadow:0 0 3px 3px rgba(99, 140, 255, 0.564);
 }
+
