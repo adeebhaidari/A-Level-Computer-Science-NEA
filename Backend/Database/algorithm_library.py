@@ -30,7 +30,7 @@ def insert_f2l_algorithms_into_table():
     
     for category_name, case_name, notation in f2l_algorithms:
         cursor.execute('''
-        INSERT INTO Algorithms (CategoryID, Name, Notation)
+        INSERT OR IGNORE INTO Algorithms (CategoryID, Name, Notation)
         VALUES (
             (SELECT CategoryID FROM AlgorithmCategories WHERE Name=?), ?, ?)''', (category_name, case_name, notation))
 
@@ -38,6 +38,36 @@ def insert_f2l_algorithms_into_table():
     connection.close()
     print('F2L algorithms have been added into the Algorithms table!')
 
+def insert_oll_algorithms_into_table():
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+    
+    for category_name, state, notation in oll_algorithms:
+        cursor.execute('''
+        INSERT OR IGNORE INTO Algorithms (CategoryID, Name, Notation)
+        VALUES (
+            (SELECT CategoryID FROM AlgorithmCategories WHERE Name=?), ?, ?)''', (category_name, state, notation))
+
+    connection.commit()
+    connection.close()
+    print('OLL algorithms have been added into the Algorithms table!')
+
+def insert_pll_algorithms_into_table():
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+    
+    for category_name, case_name, notation in pll_algorithms:
+        cursor.execute('''
+        INSERT OR IGNORE INTO Algorithms (CategoryID, Name, Notation)
+        VALUES (
+            (SELECT CategoryID FROM AlgorithmCategories WHERE Name=?), ?, ?)''', (category_name, case_name, notation))
+
+    connection.commit()
+    connection.close()
+    print('PLL algorithms have been added into the Algorithms table!')
+
 if __name__ == '__main__':
     insert_methods_and_algorithm_categories()
     insert_f2l_algorithms_into_table()
+    insert_oll_algorithms_into_table()
+    insert_pll_algorithms_into_table()

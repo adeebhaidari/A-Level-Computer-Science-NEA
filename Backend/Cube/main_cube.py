@@ -35,28 +35,75 @@ class Cube:
         self.notation_map = {
             'R': self.R,
             'R"': self.R_prime,
+            'R2': self.R2,
+            'R2"': self.R2_prime,
+            
             'L': self.L,
             'L"': self.L_prime,
+            'L2': self.L2,
+            'L2"': self.L2_prime,
+            
             'U': self.U,
             'U"': self.U_prime,
+            'U2': self.U2,
+            'U2"': self.U2_prime,
+            
             'D': self.D,
             'D"': self.D_prime,
+            'D2': self.D2,
+            'D2"': self.D2_prime,
+            
             'F': self.F,
             'F"': self.F_prime,
+            'F2': self.F2,
+            'F2"': self.F2_prime,
+            
             'B': self.B,
             'B"': self.B_prime,
-            'R2': self.R2,
-            'L2': self.L2,
-            'U2': self.U2,
-            'D2': self.D2,
-            'F2': self.F2,
             'B2': self.B2,
+            'B2"': self.B2_prime,
+            
+            'M': self.M,
+            'M"': self.M_prime,
+            'M2': self.M2,
+            'M2"': self.M2_prime,
+            
             'x': self.rotate_x,
             'x"': self.rotate_x_prime,
+            'x2': self.x2,
+            'x2"': self.x2_prime,
+            
             'y': self.rotate_y,
             'y"': self.rotate_y_prime,
-            'x': self.rotate_z,
-            'x"': self.rotate_z_prime
+            'y2': self.y2,
+            'y2"': self.y2_prime,
+            
+            'z': self.rotate_z,
+            'z"': self.rotate_z_prime,
+            'z2': self.z2,
+            'z2"': self.z2_prime,
+            
+            'r': self.r,
+            'r"': self.r_prime,
+            'r2': self.r2,
+            'r2"': self.r2_prime,
+            
+            'l': self.l,
+            'l"': self.l_prime,
+            'l2': self.l2,
+            'l2"': self.l2_prime,
+            
+            'f': self.f,
+            'f"': self.f_prime,
+            'f2': self.f2,
+            'f2"': self.f2_prime,
+            
+            'd': self.d,
+            'd"': self.d_prime,
+            'd2': self.d2,
+            'd2"': self.d2_prime,
+            
+            'S': self.S,
         }
     
     def reset(self):
@@ -155,6 +202,69 @@ class Cube:
             [(3,2,2),(3,1,2),(3,0,2)]
         ]
         self.cycle_stickers('cw', positions)
+    
+    def r(self):
+        self.R()
+        self.M_prime()
+        
+    def r_prime(self):
+            self.R_prime()
+            self.M()
+    
+    def l(self):
+            self.L()
+            self.M()
+    
+    def l_prime(self):
+            self.L_prime()
+            self.M_prime()
+                
+    def f(self):
+            self.F()
+            self.S()
+    
+    def f_prime(self):
+            self.F_prime()
+            for i in range(3): self.S()
+    
+    def d(self):
+        # Wide D: D face + E slice (middle slice between U and D)
+        self.D()
+        positions = [
+            [(2,1,0),(2,1,1),(2,1,2)], # Front middle row
+            [(3,1,0),(3,1,1),(3,1,2)], # Right middle row
+            [(4,1,0),(4,1,1),(4,1,2)], # Back middle row
+            [(1,1,0),(1,1,1),(1,1,2)]  # Left middle row
+        ]
+        self.cycle_stickers('cw', positions)
+    
+    def d_prime(self):
+        for i in range(3):
+            self.d()
+    
+    def M(self):
+            # Middle slice follows L direction (Downwards)
+            # Slices Front(2), Bottom(0), Back(4), Top(5)
+            positions = [
+                [(2,0,1),(2,1,1),(2,2,1)], # Front middle col
+                [(0,0,1),(0,1,1),(0,2,1)], # Bottom middle col
+                [(4,2,1),(4,1,1),(4,0,1)], # Back middle col (inverted)
+                [(5,0,1),(5,1,1),(5,2,1)]  # Top middle col
+            ]
+            self.cycle_stickers('cw', positions)
+
+    def M_prime(self):
+            for i in range(3): self.M()
+    
+    def S(self):
+            # Middle slice between F and B (follows F direction)
+            positions = [
+                [(5,1,0),(5,1,1),(5,1,2)], # Top middle row
+                [(3,0,1),(3,1,1),(3,2,1)], # Right middle col
+                [(0,1,2),(0,1,1),(0,1,0)], # Bottom middle row (inverted)
+                [(1,2,1),(1,1,1),(1,0,1)]  # Left middle col (inverted)
+            ]
+            self.cycle_stickers('cw', positions)
 
     def U_prime(self):
         for i in range(3):
@@ -183,26 +293,90 @@ class Cube:
     def U2(self):
         for i in range(2):
             self.U()
+    
+    def U2_prime(self):
+        for i in range(2):
+            self.U_prime()
 
     def D2(self):
         for i in range(2):
             self.D()
 
+    def D2_prime(self):
+        for i in range(2):
+            self.D_prime()
+
     def L2(self):
         for i in range(2):
             self.L()
+            
+    def L2_prime(self):
+        for i in range(2):
+            self.L_prime()
 
     def R2(self):
         for i in range(2):
             self.R()
+            
+    def R2_prime(self):
+        for i in range(2):
+            self.R_prime()
 
     def F2(self):
         for i in range(2):
             self.F()
+            
+    def F2_prime(self):
+        for i in range(2):
+            self.F_prime()
 
     def B2(self):
         for i in range(2):
             self.B()
+            
+    def B2_prime(self):
+        for i in range(2):
+            self.B_prime()
+
+    def M2(self):
+        for i in range(2):
+            self.M()
+    
+    def M2_prime(self):
+        for i in range(2):
+            self.M_prime()
+    
+    def r2(self):
+        for i in range(2):
+            self.r()
+    
+    def r2_prime(self):
+        for i in range(2):
+            self.r_prime()
+
+    def l2(self):
+        for i in range(2):
+            self.l()
+    
+    def l2_prime(self):
+        for i in range(2):
+            self.l_prime()
+    
+    def f2(self):
+        for i in range(2):
+            self.f()
+    
+    def f2_prime(self):
+        for i in range(2):
+            self.f_prime()
+    
+    def d2(self):
+        for i in range(2):
+            self.d()
+    
+    def d2_prime(self):
+        for i in range(2):
+            self.d_prime()
             
     def rotate_x(self):
         self.rotate_face_acw(1)
@@ -243,6 +417,30 @@ class Cube:
         for i in range(3):
             self.rotate_z()
     
+    def x2(self):
+        for i in range(2):
+            self.rotate_x()
+    
+    def x2_prime(self):
+        for i in range(2):
+            self.rotate_x_prime()
+
+    def y2(self):
+        for i in range(2):
+            self.rotate_y()
+    
+    def y2_prime(self):
+        for i in range(2):
+            self.rotate_y_prime() 
+
+    def z2(self):
+        for i in range(2):
+            self.rotate_z()
+    
+    def z2_prime(self):
+        for i in range(2):
+            self.rotate_z_prime() 
+    
     # ------------------------- #
     # applying movement methods
     
@@ -251,8 +449,11 @@ class Cube:
     
     def apply_move_sequence(self, sequence):
         moves = sequence.split()
-        for move in moves:
-            self.notation_map[move]()
+        try:
+            for move in moves:
+                self.notation_map[move]()
+        except KeyError:
+            raise KeyError('THIS MOVE DOESNT EXIST SOMEHOW!')
     
     def reorient(self, front, bottom):
         # this method will reorient the cube into a certain position based onn a given front and bottom face
@@ -275,10 +476,7 @@ class Cube:
     # state inspection methods
     
     def is_solved(self):
-        return self.cube == self.reset()
-    
-    def get_face(self, face):
-        return self.cube[face]
+        return np.array_equal(self.cube, self.reset())
         
     # ------------------------ #
     # scramble method/s - may need more methods later on

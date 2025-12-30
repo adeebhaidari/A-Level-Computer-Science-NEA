@@ -3,11 +3,39 @@ import main_cube
 import itertools
 import numpy as np
 from pprint import pprint as pp
+import sqlite3
 
 class Solver(main_cube.Cube):
     def __init__(self):
         super().__init__()
-    
+        self.pll_mappings = {
+            '131212323444': 'Ub Perm',
+            '121232313444': 'Ua Perm',
+            '141232323414': 'Z Perm',
+            '131242313424': 'H Perm',
+            
+            '214123431341': 'E Perm',
+            '122331243414': 'Aa Perm',
+            '244112323431': 'Ab Perm',
+            
+            '131223412344': 'T Perm',
+            '111243432324': 'F Perm',
+            '441222334113': 'Ja Perm',
+            '111233422344': 'Jb Perm',
+            '141223432314': 'Ra Perm',
+            '411232324143': 'Rb Perm',
+            
+            '311224143432': 'V Perm',
+            '341224133412': 'Y Perm',
+            '133422311244': 'Na Perm',
+            '331224113442': 'Nb Perm',
+            
+            '141233412324': 'Ga Perm',
+            '132311243424': 'Gb Perm',
+            '121243412334': 'Gc Perm',
+            '131213442324': 'Gd Perm'
+            }
+        
     # --------- helper functions  ------------- #
     
     def cube_to_state(self, cube):
@@ -17,7 +45,18 @@ class Solver(main_cube.Cube):
         return np.array(state, dtype=object)
     
     # -------- cube state validation  ------------- #
+    # make soon
     
+    # ------- Getting algorithms from data base ----- #
+    def get_algorithm(self, case):
+        connection = sqlite3.connect('speedcubing.db')
+        cursor = connection.cursor()
+        
+        cursor.execute('SELECT Notation from Algorithms WHERE Name=?', (case,))
+        result = cursor.fetchone()
+        connection.close()
+        return result[0]
+
     # ------------ A* for solving the white cross ------- #
     
     def heuristic(self, state):
@@ -101,12 +140,96 @@ class Solver(main_cube.Cube):
     # ------------- Solving F2L ---------------- #
     # --> i need to create methods to detect f2l cases, if not found then use a localised A* to move some pieces to then detect any f2l cases
     
+    
+    
     # ------------- Solving OLL ---------------- #
+    def top_face_mapping(self):
+        mapping = ''
+        top_face = self.cube[5]
+        for i in range(0,3):
+            for j in range(0,3):
+                if top_face[i,j] == 'Y':
+                    mapping += 'Y'
+                else:
+                    mapping += 'X'
+        return mapping
+    
+    def side_faces_mapping(self):
+        mapping = ''
+        for i in range(1,5):
+            for j in range(0,3):
+                if self.cube[i][0,j] == 'Y':
+                    mapping += 'Y'
+                else:
+                    mapping  += 'X'
+        return mapping
+    
+    def solve_oll(self):
+        connection = sqlite3.connect('speedcubing.db')
+        cursor = connection.cursor()
+        cursor.execute('SELECT Name FROM Algorithms WHERE CategoryID == 2')
+        names = cursor.fetchall()
+        states = [item[0] for item in names]
+        for u in range(4):
+            state = ''
+            state += self.top_face_mapping()
+            state += self.side_faces_mapping()
+            if state in states:
+                algorithm = self.get_algorithm(state)
+                self.apply_move_sequence(algorithm)
+                return self.cube, ''
+            elif np.all(self.cube[5] == 'Y') == True:
+                return self.cube, ''
+            self.apply_move('U')
+        return self.cube, 'OLL case not recognised.'
     
     # ------------- Solving PLL ---------------- #
+    def read_pll_state(self):
+        mappings = {
+            self.cube[1][1,1]:'1',
+            self.cube[2][1,1]:'2',
+            self.cube[3][1,1]:'3',
+            self.cube[4][1,1]:'4',
+        }
+        state = ''
+        for i in range(1,5):
+            for j in range(0,3):
+                state += mappings[self.cube[i][0,j]]
+        return state
+    
+    def solve_pll(self):
+        for u in range(4):
+            for y in range(4):
+                state = self.read_pll_state()
+                if state in self.pll_mappings:
+                    case = self.pll_mappings[state]
+                    algorithm = self.get_algorithm(case)
+                    self.apply_move_sequence(algorithm)
+                    return self.cube
+                self.rotate_y()
+            self.apply_move('U')
+        return 'PLL case not recognised.'
 
-main = Solver()
-pp(main.scramble())
-pp(main.cube)
-print()
-pp(main.solve_white_cross())
+    
+if __name__ == '__main__':
+    main = Solver()
+    connection = sqlite3.connect('speedcubing.db')
+    cursor = connection.cursor()
+    cursor.execute('SELECT Notation FROM Algorithms WHERE CategoryID == 2')
+    temp_moves = cursor.fetchall()
+    moves = [item[0] for item in temp_moves]
+    right = []
+    wrong = []
+    for move in moves:
+        main.cube = main.reset()
+        main.reorient('R', 'W')
+        main.apply_move_sequence(f'{move}')
+        cube, stat = main.solve_oll()
+        if stat == 'OLL case not recognised.':
+            wrong.append(move)
+        else:
+            right.append(move)
+    pp(wrong)
+    pp(len(wrong))
+    pp(right)
+    pp(len(right)) 
