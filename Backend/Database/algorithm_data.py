@@ -168,7 +168,7 @@ oll_algorithms = [
     
     ('OLL', 'XXXYYYXXXYXYXYYXXXYYX', 'f R U R" U" R U R" U" f"'),
     ('OLL', 'XXXYYYXXXYXYXYXYXYXYX', 'r" U" r U" R" U R U" R" U R r" U r'),
-    ('OLL', 'XYXXYXXYXXYXYXXYYYXXY', 'R U R" U R U" y R U" R F"'),
+    ('OLL', 'XYXXYXXYXXYXYXXYYYXXY', 'R U R" U R U" y R U" R" F"'),
     ('OLL', 'XYXXYXXYXYYYXXXYYYXXX', 'y R" F R U R U" R2" F" R2 U" R" U R U R"'),
     
     ('OLL', 'XYXYYXXXYYXXYYXXYXYXX', 'R U R" U" R" F R2 U R" U" F"'),
@@ -177,7 +177,7 @@ oll_algorithms = [
     ('OLL', 'YYXYYXXXYXXXYYXXYYXXX', 'F R U" R" U" R U R" F"'),
     
     ('OLL', 'XXXYYYYXXXXXXYYXXYXYY', 'F U R U" R2" F" R U R U" R"'),
-    ('OLL', 'XXXYYYXXYYXXYYXXXXYYX', 'R" F R" U R" F" R F U" F"'),
+    ('OLL', 'XXXYYYXXYYXXYYXXXXYYX', 'R" F R U R" F" R F U" F"'),
     ('OLL', 'XXYYYYXXXYXXYYXYXXXYX', 'r U r" R U R" U" r U" r"'),
     ('OLL', 'XXXYYYXXYXXYXYXXXYXYY', 'r" U" r R" U" R U r" U r'),
     
@@ -199,7 +199,7 @@ oll_algorithms = [
     ('OLL', 'YYXXYYXXXXYXYYXYXXYXX', 'M" R" U" R U" R" U2 R U" M'),
     # FIXED BELOW: Changed U" to U in the middle (L U F) to match PDF 
     ('OLL', 'XXYYYYYXXXXXXYXYXXXYY', 'L F" L" U" L U F U" L"'),
-    ('OLL', 'YXXYYYXYYXXYXYXXXXYYX', 'R" F R U R" U" F" U R'),
+    ('OLL', 'YXXYYYXXYXXYXYXXXXYYX', 'R" F R U R" U" F" U R'),
     
     ('OLL', 'XXXXYXXXXYYYXYXYYYXYX', 'R U2" R2" F R F" U2" R" F R F"'),
     # FIXED BELOW: Changed U to U" in the middle (f" U" F) to match standard O3/PDF implied 
@@ -230,7 +230,7 @@ pll_algorithms = [
     ('PLL', 'Ja Perm', 'R" U L" U2 R U" R" U2 R L U"'),
     ('PLL', 'Jb Perm', 'R U R" F" R U R" U" R" F R2 U" R" U"'),
     ('PLL', 'T Perm', 'R U R" U" R" F R2 U" R" U" R U R" F"'),
-    ('PLL', 'F Perm', 'R" U" F" R U R" U" R" F R2 U" R" U" R U R" U R" U R'),
+    ('PLL', 'F Perm', 'R" U" F" R U R" U" R" F R2 U" R" U" R U R" U R'),
 
     # Swap One Set of Diagonal Corners
     ('PLL', 'V Perm', 'R" U R" U" y R" F" R2 U" R" U R" F R F'),

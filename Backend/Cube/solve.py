@@ -163,28 +163,7 @@ class Solver(main_cube.Cube):
                 else:
                     mapping  += 'X'
         return mapping
-    '''
-    def solve_oll(self):
-        connection = sqlite3.connect('speedcubing.db')
-        cursor = connection.cursor()
-        cursor.execute('SELECT Name FROM Algorithms WHERE CategoryID == 2')
-        names = cursor.fetchall()
-        states = [item[0] for item in names]
-        connection.close()
-        for y in range(4):
-            for u in range(4):
-                state = ''
-                state += self.top_face_mapping()
-                state += self.side_faces_mapping()
-                if state in states:
-                    algorithm = self.get_algorithm(state)
-                    self.apply_move_sequence(algorithm)
-                    return self.cube, ''
-                elif np.all(self.cube[5] == 'Y') == True:
-                    return self.cube, ''
-                self.apply_move('U')
-        return self.cube, 'OLL case not recognised.'
-        '''
+    
     def solve_oll(self):
             connection = sqlite3.connect('speedcubing.db')
             cursor = connection.cursor()
@@ -192,30 +171,19 @@ class Solver(main_cube.Cube):
             names = cursor.fetchall()
             states = [item[0] for item in names]
             connection.close()
-
-            # Try to find a match from all 4 viewing angles (y rotations)
-            # This is required because some PDF algorithms (like OLL 29/30) use 'y' moves
             for y_rot in range(4):
-                # Try to match the pattern with U alignments
                 for u_adj in range(4):
                     state = ''
                     state += self.top_face_mapping()
                     state += self.side_faces_mapping()
-                    
                     if state in states:
                         algorithm = self.get_algorithm(state)
                         self.apply_move_sequence(algorithm)
-                        return self.cube, ''
-                    
+                        return self.cube, algorithm
                     self.apply_move('U')
-                
-                # If no match found after 4 U turns, rotate the whole cube and try again
                 self.rotate_y()
-            
-            # Check if it was already solved (all Yellow)
             if np.all(self.cube[5] == 'Y'):
                 return self.cube, ''
-
             return self.cube, 'OLL case not recognised.'
     
     # ------------- Solving PLL ---------------- #
@@ -240,7 +208,7 @@ class Solver(main_cube.Cube):
                     case = self.pll_mappings[state]
                     algorithm = self.get_algorithm(case)
                     self.apply_move_sequence(algorithm)
-                    return self.cube
+                    return self.cube, algorithm
                 self.rotate_y()
             self.apply_move('U')
         return 'PLL case not recognised.'
@@ -251,20 +219,13 @@ if __name__ == '__main__':
     connection = sqlite3.connect('speedcubing.db')
     cursor = connection.cursor()
     cursor.execute('SELECT Notation FROM Algorithms WHERE CategoryID == 2')
-    temp_moves = cursor.fetchall()
-    moves = [item[0] for item in temp_moves]
-    right = []
-    wrong = []
+    data = cursor.fetchall()
+    moves = [item[0] for item in data]
     for move in moves:
         main.cube = main.reset()
         main.reorient('R', 'W')
-        main.apply_move_sequence(f'{move}')
-        cube, stat = main.solve_oll()
-        if stat == 'OLL case not recognised.':
-            wrong.append(move)
-        else:
-            right.append(move)
-    pp(wrong)
-    pp(len(wrong))
-    pp(right)
-    pp(len(right)) 
+        main.apply_move_sequence(move)
+        state, output = main.solve_oll()
+        if output == 'OLL case not recognised.':
+            print(move)
+            break
