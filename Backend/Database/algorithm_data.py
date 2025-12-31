@@ -57,6 +57,83 @@ f2l_algorithms = [
     ('F2L', 'Edge and Corner 5', 'R U R" U" R U" R" U2 y" R" U" R')
 ]
 
+'''
+oll_algorithms = [
+    # the first 9 letters represent the pattern of the top yellow face reading from left to right top to bottom
+    # Y stands for yellow, X stands for any other colour
+    ('OLL', 'XYYYYYXYXYXXYXXYXXXXX', 'R U2 R" U" R U" R"'),
+    ('OLL', 'XYXYYYYYXXXXXXYXXYXXY', 'R U R" U R U2 R"'),
+    ('OLL', 'XYXYYYXYXXXXYXYXXXYXY', 'R U2 R" U" R U R" U" R U" R"'),
+    ('OLL', 'XYXYYYXYXYXYXXYXXXYXX', 'R U2" R2" U" R2 U" R2" U2" R'),
+    ('OLL', 'XYYYYYXYYXXXYXXXXXXXY', 'r U R" U" r" F R F"'),
+    ('OLL', 'YYXYYYXYYXXXYXXXXYXXX', 'x R" U R D" R" U" R D x"'),
+    ('OLL', 'XYXYYYYYYXXXXXXXXXYXY', 'R2 D" R U2 R" D R U2 R'),
+    
+    ('OLL', 'XXYYYYXXYXXXYYXXXXXYY', 'R U R" U" R" F R F"'),
+    ('OLL', 'XXYYYYXXYYXYXYXXXXXYX', 'F R U R" U" F"'),
+    
+    ('OLL', 'XXXXYYXYYXYYXXXXXYXYY', 'r" U2" R U R" U r'),
+    ('OLL', 'XYYXYYXXXYYXYYXYXXXXX', 'r U2 R" U" R U" r"'),
+    
+    ('OLL', 'XXXYYYYXYYXXXYXXXYXYX', 'R U R2" U" R" F R U R U" F"'),
+    ('OLL', 'YYXXYXYYXXYXXXXYYYXXX', 'R" U" R" F R F" U R'),
+    
+    ('OLL', 'YXXYYXXYYXXXYXXXYYXYX', 'y2 R U R" F" R U R" U" R" F R U" R" F R F"'),
+    ('OLL', 'XYYYYXYXXXXXXYXYYXXXY', 'R U R" U R U" R" U" R" F R F"'),
+    
+    ('OLL', 'YYYYYXYXYXXXXYXXYXXXX', 'r U R" U" M U R U" R"'),
+    ('OLL', 'YXYYYYYXYXXXXYXXXXXYX', 'R U R" U" M" U R U" r"'),
+    
+    ('OLL', 'XYYXYYXXYXYXYYXXXXXXY', 'R" U" R" F R F" U R'),
+    ('OLL', 'XXYXYYXYYXYXYXXXXXXYY', 'R U B" U" R" U R B R"'),
+    ('OLL', 'YXXYYXYYXXXXXXXYYYXYX', 'f" L" U" L U f'),
+    ('OLL', 'XXYXYYXYYYYYXXXXXXXYX', 'f R U R" U" F"'),
+    
+    ('OLL', 'XXXYYYXXXYXYXYYXXXYYX', 'f R U R" U" R U R" U" f"'),
+    ('OLL', 'XXXYYYXXXYXYXYXYXYXYX', 'r" U" r U" R" U R U" R" U R r" U r'),
+    ('OLL', 'XYXXYXXYXXYXYXXYYYXXY', 'y R U R" U" R U" R" F" U" F R U R"'),
+    ('OLL', 'XYXXYXXYXYYYXXXYYYXXX', 'y R" F R U R U" R2" F" R2 U" R" U R U R"'),
+    
+    ('OLL', 'XYXYYXXXYYXXYYXXYXYXX', 'R U R" U" R" F R2 U R" U" F"'),
+    ('OLL', 'XXYYYXXYXXXYXXYXYXXYY', 'R U R" U R" F R F" R U2" R"'),
+    ('OLL', 'YXXXYYXYYXYXYXXXXYXYX', 'R U2" R2" F R F" R U2" R"'),
+    ('OLL', 'YYXYYXXXYXXXYYXXYYXXX', 'F R U" R" U" R U R" F"'),
+    
+    ('OLL', 'XXXYYYYXXXXXXYYXXYXYY', 'F U R U" R2" F" R U R U" R"'),
+    ('OLL', 'XXXYYYXXYYXXYYXXXXYYX', 'y" F U R U2 R" U" R U2 R" U" F"'),
+    ('OLL', 'XXYYYYXXXYXXYYXYXXXYX', 'r U r" R U R" U" r U" r"'),
+    ('OLL', 'XXXYYYXXYXXYXYXXXYXYY', 'r" U" r R" U" R U r" U r'),
+    
+    ('OLL', 'YXYYYXXYXXXYXXXYYXXYX', 'y R U R" U" R U" R" F" U" F R U R"'),
+    ('OLL', 'YYXXYYYXXXYXXYYXXXYXX', 'y" F U R U2 R" U" R U2 R" U" F"'),
+    ('OLL', 'XYXYYXYXYXXXXYXXYXYXY', 'R U R" U R U2" R" F R U R" U" F"'),
+    ('OLL', 'YXYYYXXYXXXXYXYXYXXYX', 'R" U" R U" R" U2 R F R U R" U" F"'),
+    
+    ('OLL', 'XYXYYXXXXYXYXYYXYXYXX', 'F R U R" U" R U R" U" F"'),
+    ('OLL', 'XYXXYYXXXXYXYYXYXYXXY', 'F" L" U" L U L" U" L U F'),
+    ('OLL', 'XYXXYYXXXYYYXYYXXXYXX', 'r U" r2" U r2 U r2" U" r'),
+    ('OLL', 'XXXXYYXYXYYYXXYXXXYYX', 'r" U r2 U" r2" U" r2 U r"'),
+    ('OLL', 'XXXXYYXYXYYYXXXYXYXYX', 'r" U" R U" R" U R U" R" U2 r'),
+    ('OLL', 'XYXXYYXXXYYYXYXYXYXXX', 'r U R" U R U" R" U R U2" r"'),
+    
+    ('OLL', 'XYXYYXYXXXXXXYYXYYXXY', 'r U R" U R U2" r"'),
+    ('OLL', 'YXXYYXXYXXXXYXXYYXYYX', 'r" U" R U" R" U2 r'),
+    ('OLL', 'XXXXYYYYXXYXXXYXXYXYY', 'r" R2 U R" U R U2 R" U M"'),
+    ('OLL', 'YYXXYYXXXXYXYYXYXXYXX', 'M" R" U" R U" R" U2 R U" M'),
+    ('OLL', 'XXYYYYYXXXXXXYXYXXXYY', 'L F" L" U" L U" F U" L"'),
+    ('OLL', 'YXXYYYXYYXXYXYXXXXYYX', 'R" F R U R" U" F" U R'),
+    
+    ('OLL', 'XXXXYXXXXYYYXYXYYYXYX', 'R U2" R2" F R F" U2" R" F R F"'),
+    ('OLL', 'XXXXYXXXXYYYXYYXYXYYX', 'F R U R" U" F" f R U R" U" f"'),
+    ('OLL', 'XXXXYXXXYXYYXYXXYYXYY', 'f R U R" U" f" U" F R U R" U" F"'),
+    ('OLL', 'XXYXYXXXXYYXYYXYYXXYX', 'f R U R" U" f" U F R U R" U" F"'),
+    ('OLL', 'YXYXYXXXXXYXYYYXYXXYX', 'r U R" U R U2 r" r" U" R U" R" U2 r'),
+    ('OLL', 'YXYXYXXXXXYYXYXYYXXYX', 'M U R U R" U" M" R" F R F"'),
+    ('OLL', 'YXXXYXXXYXYYXYXXYXYYX', 'R U R" U R" F R F" U2" R" F R F"'),
+    ('OLL', 'YXYXYXYXYXYXXYXXYXXYX', 'M U R U R" U" M2" U R U" r"'),
+]
+'''
+
 oll_algorithms = [
     # the first 9 letters represent the pattern of the top yellow face reading from left to right top to bottom
     # Y stands for yellow, X stands for any other colour
@@ -86,7 +163,8 @@ oll_algorithms = [
     ('OLL', 'XYYXYYXXYXYXYYXXXXXXY', 'R" U" F U R U" R" F" R'),
     ('OLL', 'XXYXYYXYYXYXYXXXXXXYY', 'R U B" U" R" U R B R"'),
     ('OLL', 'YXXYYXYYXXXXXXXYYYXYX', 'f" L" U" L U f'),
-    ('OLL', 'XXYXYYXYYYYYXXXXXXXYX', 'f R U R" U" F"'),
+    # FIXED BELOW: Changed F" to f" to match PDF  and fix slice error
+    ('OLL', 'XXYXYYXYYYYYXXXXXXXYX', 'f R U R" U" f"'),
     
     ('OLL', 'XXXYYYXXXYXYXYYXXXYYX', 'f R U R" U" R U R" U" f"'),
     ('OLL', 'XXXYYYXXXYXYXYXYXYXYX', 'r" U" r U" R" U R U" R" U R r" U r'),
@@ -119,13 +197,15 @@ oll_algorithms = [
     ('OLL', 'YXXYYXXYXXXXYXXYYXYYX', 'r" U" R U" R" U2 r'),
     ('OLL', 'XXXXYYYYXXYXXXYXXYXYY', 'r" R2 U R" U R U2 R" U M"'),
     ('OLL', 'YYXXYYXXXXYXYYXYXXYXX', 'M" R" U" R U" R" U2 R U" M'),
-    ('OLL', 'XXYYYYYXXXXXXYXYXXXYY', 'L F" L" U" L U" F U" L"'),
+    # FIXED BELOW: Changed U" to U in the middle (L U F) to match PDF 
+    ('OLL', 'XXYYYYYXXXXXXYXYXXXYY', 'L F" L" U" L U F U" L"'),
     ('OLL', 'YXXYYYXYYXXYXYXXXXYYX', 'R" F R U R" U" F" U R'),
     
     ('OLL', 'XXXXYXXXXYYYXYXYYYXYX', 'R U2" R2" F R F" U2" R" F R F"'),
+    # FIXED BELOW: Changed U to U" in the middle (f" U" F) to match standard O3/PDF implied 
     ('OLL', 'XXXXYXXXXYYYXYYXYXYYX', 'F R U R" U" F" f R U R" U" f"'),
     ('OLL', 'XXXXYXXXYXYYXYXXYYXYY', 'f R U R" U" f" U" F R U R" U" F"'),
-    ('OLL', 'XXYXYXXXXYYXYYXYYXXYX', 'f R U R" U" f" U F R U R" U" F"'),
+    ('OLL', 'XXYXYXXXXYYXYYXYYXXYX', 'f R U R" U" f" U" F R U R" U" F"'),
     ('OLL', 'YXYXYXXXXXYXYYYXYXXYX', 'r U R" U R U2 r" r" U" R U" R" U2 r'),
     ('OLL', 'YXYXYXXXXXYYXYXYYXXYX', 'M U R U R" U" M" R" F R F"'),
     ('OLL', 'YXXXYXXXYXYYXYXXYXYYX', 'R U R" U R" F R F" U2" R" F R F"'),
