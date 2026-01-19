@@ -64,6 +64,9 @@ class Solver(main_cube.Cube):
         # this is in the form of (x1,y1,f2,x2,y2) where (x1,y1) are the coordinates of where the white edtge faces are meant to be on the white face
         # (f2,x2,y2) is the face and coordinates of the adjacent face of the edge piece that has white as well
         # the letter at the end is the colour of the adjacent edge piece
+        
+        # f(n) = g(n) + h(n)
+        
         edges = [
             (0,1,2,2,1,'R'),
             (1,0,1,2,1,'B'),
@@ -109,6 +112,39 @@ class Solver(main_cube.Cube):
         f_score[start_state] = self.heuristic(start_state)
         open_set.put((f_score[start_state], next(counter), start_state))
         ALL_MOVES = list(self.notation_map.keys())
+        ALL_MOVES.remove('M')
+        ALL_MOVES.remove('M"')
+        ALL_MOVES.remove('M2')
+        ALL_MOVES.remove('M2"')
+        ALL_MOVES.remove('S')
+        ALL_MOVES.remove('x')
+        ALL_MOVES.remove('x"')
+        ALL_MOVES.remove('x2')
+        ALL_MOVES.remove('x2"')
+        ALL_MOVES.remove('y')
+        ALL_MOVES.remove('y"')
+        ALL_MOVES.remove('y2')
+        ALL_MOVES.remove('y2"')
+        ALL_MOVES.remove('z')
+        ALL_MOVES.remove('z"')
+        ALL_MOVES.remove('z2')
+        ALL_MOVES.remove('z2"')
+        ALL_MOVES.remove('r')
+        ALL_MOVES.remove('r"')
+        ALL_MOVES.remove('r2')
+        ALL_MOVES.remove('r2"')
+        ALL_MOVES.remove('l')
+        ALL_MOVES.remove('l"')
+        ALL_MOVES.remove('l2')
+        ALL_MOVES.remove('l2"')
+        ALL_MOVES.remove('d')
+        ALL_MOVES.remove('d"')
+        ALL_MOVES.remove('d2')
+        ALL_MOVES.remove('d2"')
+        ALL_MOVES.remove('f')
+        ALL_MOVES.remove('f"')
+        ALL_MOVES.remove('f2')
+        ALL_MOVES.remove('f2"')
         while not open_set.empty():
             f, c, current_state = open_set.get()
             if self.is_white_cross_solved(current_state):
@@ -216,16 +252,6 @@ class Solver(main_cube.Cube):
     
 if __name__ == '__main__':
     main = Solver()
-    connection = sqlite3.connect('speedcubing.db')
-    cursor = connection.cursor()
-    cursor.execute('SELECT Notation FROM Algorithms WHERE CategoryID == 2')
-    data = cursor.fetchall()
-    moves = [item[0] for item in data]
-    for move in moves:
-        main.cube = main.reset()
-        main.reorient('R', 'W')
-        main.apply_move_sequence(move)
-        state, output = main.solve_oll()
-        if output == 'OLL case not recognised.':
-            print(move)
-            break
+    pp(main.scramble())
+    pp(main.cube)
+    pp(main.solve_white_cross())

@@ -110,9 +110,6 @@ class Cube:
         cube = [[[sticker]*3 for i in range(3)] for sticker in ['W', 'B', 'R', 'G', 'O', 'Y']]
         return np.array(cube, dtype=object)
     
-    def copy(self):
-        pass
-    
     # ------------------------------- #
     # helper methods for cube movement
     
