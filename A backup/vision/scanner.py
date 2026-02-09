@@ -1,6 +1,5 @@
 import cv2 as cv
 import numpy as np
-from pprint import pprint as pp
 
 class CubeScanner:
     def __init__(self):
@@ -8,6 +7,7 @@ class CubeScanner:
         self.gap = 50
         self.sticker_size = 60
         # in the order of index 0 1 2 3 4 5 being white blue red green orange yellow
+        # (This matches: 0:W, 1:B, 2:R, 3:G, 4:O, 5:Y)
         self.face_order = ['white', 'blue', 'red', 'green', 'orange', 'yellow']
         # this stores the colours of each sticker for each face
         self.colour_map = {}
@@ -83,6 +83,10 @@ class CubeScanner:
         # this opens the deafult camera
         capture = cv.VideoCapture(0)
         current_face_index = 0 # this is the index of the current face of the cube
+        
+        # Array to store the 6 faces for the logical cube
+        cube_array = [None] * 6
+
         while True:
             # ret is a boolean value indicating if the capturing of the frame was successful, frame is the actual frame captured by the camera
             ret, frame = capture.read()
@@ -110,7 +114,10 @@ class CubeScanner:
             elif key == 32: # the spacebar
                 if current_face_index < 6:
                     face_result = self.capture_face(hsv_frame)
+                    # store in the map for your records and the array for the logic
                     self.colour_map[self.face_order[current_face_index]] = face_result
+                    cube_array[current_face_index] = face_result
+                    
                     print(f'The {self.face_order[current_face_index]} face has been captured!')
                     current_face_index += 1
                 else:
@@ -119,8 +126,5 @@ class CubeScanner:
         capture.release()
         cv.destroyAllWindows()
         
-        return self.colour_map
-
-if __name__ == '__main__':
-    main = CubeScanner()
-    main.run()
+        # Return the data formatted as a numpy array for the logical Cube
+        return np.array(cube_array)

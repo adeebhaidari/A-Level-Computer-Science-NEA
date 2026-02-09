@@ -1,31 +1,39 @@
-f2l_algorithms = [
-    # Basic Inserts
-    ('F2L', 'Basic Inserts 1', 'U R U" R"'),
-    ('F2L', 'Basic Inserts 2', 'y" U" R" U R'),
-    ('F2L', 'Basic Inserts 3', 'y" R" U" R'),
-    ('F2L', 'Basic Inserts 4', 'R U R"'),
+'''
+for solving f2l, the program will only look at 3 faces, the faces at index 0 2 and 3. so the states of the faces will be converted into a string such that the p[rogfrma will e able to convert any of group of 3 faceas andf compare ifb that state can be solcved with an algorithm, if not then localised A* will be used until a state is found that can be solved
+the first 9 characters will be the state of the face at index 2, 2nd 9 characters will be the state at face index 3 and last 9 face index 5.
+the numbers for the key of this dictionary represent the center face colour relative to the way the cube has been rotated around the y-axis
+-> the format is:
+    face index, face coordindta (x,y), target colour based from the 3 faces
+    this will repeat 3 times in total for faces index 2 3 and 5
+'''
+'''
+for identifying the f2l state, the string will be in the form corner edger where the first half the string will contain information about the corner and the second half about the edge
+    it will be so that the first character is the face index, second character the face coordinate (x,y) and this will be done for all the stickers
+'''
 
-    # F2L Case 1
-    ('F2L', 'Case 1.1', 'U" R U" R" U y" R" U" R'),
+f2l_algorithms = [
+    ('F2L', '20103003301351225222', 'U R U" R"'),
+    ('F2L', 'X22X2XXXX0XXX3XXXXXXXXXXX33', 'y" U" R" U R'),
+    ('F2L', 'XX0X2XXXX3XXX3XXXXXXX3XXXX2', 'y" R" U" R'),
+    ('F2L', 'XX2X2XXXX0XXX3XXXXX2XXXXXX3', 'R U R"'),
+
+    ('F2L', 'XX0X2XXXX3XXX3XXXXX3XXXXXX2', 'U" R U" R" U y" R" U" R'),
     ('F2L', 'Case 1.2', 'U" R U R" U R U R"'),
     ('F2L', 'Case 1.3', 'U" R U2" R" U y" R" U" R'),
     ('F2L', 'Case 1.4', 'R" U2" R2 U R2" U R'),
     ('F2L', 'Case 1.5', 'y" U R" U R U" R" U" R'),
     ('F2L', 'Case 1.6', 'U" R U" R" U R U R"'),
 
-    # F2L Case 2
     ('F2L', 'Case 2.1', 'U" R U R" U2 R U" R"'),
     ('F2L', 'Case 2.2', 'y" U R" U" R U2" R" U R'),
     ('F2L', 'Case 2.3', 'U" R U2" R" U2 R U" R"'),
     ('F2L', 'Case 2.4', 'y" U R" U2 R U2" R" U R'),
 
-    # F2L Case 3
     ('F2L', 'Case 3.1', 'U R U2 R" U R U" R"'),
     ('F2L', 'Case 3.2', 'y" U" R" U2 R U" R" U R'),
     ('F2L', 'Case 3.3', 'R U R" U2 R U R"'),
     ('F2L', 'Case 3.4', 'F" L" U2 L F'),
 
-    # Incorrectly Connected Pieces
     ('F2L', 'Incorrectly Connected 1', 'y" R" U R U2" y R U R"'),
     ('F2L', 'Incorrectly Connected 2', 'R U" R" U2 y" R" U" R'),
     ('F2L', 'Incorrectly Connected 3', 'R U2" R" U" R U R"'),
@@ -33,7 +41,6 @@ f2l_algorithms = [
     ('F2L', 'Incorrectly Connected 5', 'R U R" U2" R U R" U R U" R"'),
     ('F2L', 'Incorrectly Connected 6', 'F U R U" R" F" R U" R"'),
 
-    # Corner in Place, Edge in U Face
     ('F2L', 'Corner in Place 1', 'R" F" R U R U" R" F'),
     ('F2L', 'Corner in Place 2', 'U R U" R" U" F" U F'),
     ('F2L', 'Corner in Place 3', 'R U" R" U R U" R"'),
@@ -41,7 +48,6 @@ f2l_algorithms = [
     ('F2L', 'Corner in Place 5', 'R" F R F" U R U" R"'),
     ('F2L', 'Corner in Place 6', 'R U R" U" R U R"'),
 
-    # Edge in Place, Corner in U Face
     ('F2L', 'Edge in Place 1', 'U" R" F R F" R U" R"'),
     ('F2L', 'Edge in Place 2', 'U R U" R" U R U" R" U R U" R"'),
     ('F2L', 'Edge in Place 3', 'U" R U" R" U2 R U" R"'),
@@ -49,7 +55,6 @@ f2l_algorithms = [
     ('F2L', 'Edge in Place 5', 'U" R U R" U y" R" U" R'),
     ('F2L', 'Edge in Place 6', 'U F" U" F U" R U R"'),
 
-    # Edge and Corner in Place
     ('F2L', 'Edge and Corner 1', 'R U" R" d R" U2 R U2" R" U R'),
     ('F2L', 'Edge and Corner 2', 'R U R" U" R U2 R" U" R U R"'),
     ('F2L', 'Edge and Corner 3', 'R U" R" U R U2" R" U R U" R"'),
@@ -163,7 +168,6 @@ oll_algorithms = [
     ('OLL', 'XYYXYYXXYXYXYYXXXXXXY', 'R" U" F U R U" R" F" R'),
     ('OLL', 'XXYXYYXYYXYXYXXXXXXYY', 'R U B" U" R" U R B R"'),
     ('OLL', 'YXXYYXYYXXXXXXXYYYXYX', 'f" L" U" L U f'),
-    # FIXED BELOW: Changed F" to f" to match PDF  and fix slice error
     ('OLL', 'XXYXYYXYYYYYXXXXXXXYX', 'f R U R" U" f"'),
     
     ('OLL', 'XXXYYYXXXYXYXYYXXXYYX', 'f R U R" U" R U R" U" f"'),
@@ -197,12 +201,10 @@ oll_algorithms = [
     ('OLL', 'YXXYYXXYXXXXYXXYYXYYX', 'r" U" R U" R" U2 r'),
     ('OLL', 'XXXXYYYYXXYXXXYXXYXYY', 'r" R2 U R" U R U2 R" U M"'),
     ('OLL', 'YYXXYYXXXXYXYYXYXXYXX', 'M" R" U" R U" R" U2 R U" M'),
-    # FIXED BELOW: Changed U" to U in the middle (L U F) to match PDF 
     ('OLL', 'XXYYYYYXXXXXXYXYXXXYY', 'L F" L" U" L U F U" L"'),
     ('OLL', 'YXXYYYXXYXXYXYXXXXYYX', 'R" F R U R" U" F" U R'),
     
     ('OLL', 'XXXXYXXXXYYYXYXYYYXYX', 'R U2" R2" F R F" U2" R" F R F"'),
-    # FIXED BELOW: Changed U to U" in the middle (f" U" F) to match standard O3/PDF implied 
     ('OLL', 'XXXXYXXXXYYYXYYXYXYYX', 'F R U R" U" F" f R U R" U" f"'),
     ('OLL', 'XXXXYXXXYXYYXYXXYYXYY', 'f R U R" U" f" U" F R U R" U" F"'),
     ('OLL', 'XXYXYXXXXYYXYYXYYXXYX', 'f R U R" U" f" U" F R U R" U" F"'),
@@ -213,18 +215,15 @@ oll_algorithms = [
 ]
 
 pll_algorithms = [
-    # Permutations of Edges Only
     ('PLL', 'Ub Perm', 'R2 U R U R" U" R" U" R" U R"'),
     ('PLL', 'Ua Perm', 'R U" R U R U R U" R" U" R2'),
     ('PLL', 'H Perm', 'M2" U M2" U2 M2" U M2"'),
     ('PLL', 'Z Perm', 'M2" U M2" U M" U2 M2" U2 M" U2'),
 
-    # Permutations of Corners Only
     ('PLL', 'Aa Perm', 'x R" U R" D2 R U" R" D2 R2 x"'),
     ('PLL', 'Ab Perm', 'x R2" D2 R U R" D2 R U" R x"'),
     ('PLL', 'E Perm', 'x" R U" R" D R U R" D" R U R" D R U" R" D" x'),
 
-    # Swap One Set of Adjacent Corners
     ('PLL', 'Ra Perm', 'R U" R" U" R U R D R" U" R D" R" U2 R" U"'),
     ('PLL', 'Rb Perm', 'R" U2 R U2" R" F R U R" U" R" F" R2 U"'),
     ('PLL', 'Ja Perm', 'R" U L" U2 R U" R" U2 R L U"'),
@@ -232,13 +231,11 @@ pll_algorithms = [
     ('PLL', 'T Perm', 'R U R" U" R" F R2 U" R" U" R U R" F"'),
     ('PLL', 'F Perm', 'R" U" F" R U R" U" R" F R2 U" R" U" R U R" U R'),
 
-    # Swap One Set of Diagonal Corners
     ('PLL', 'V Perm', 'R" U R" U" y R" F" R2 U" R" U R" F R F'),
     ('PLL', 'Y Perm', 'F R U" R" U" R U R" F" R U R" U" R" F R F"'),
     ('PLL', 'Na Perm', 'R U R" U R U R" F" R U R" U" R" F R2 U" R" U2 R U" R"'),
     ('PLL', 'Nb Perm', 'R" U R U" R" F" U" F R U R" F R" F" R U" R'),
 
-    # G Permutations (Double Cycles)
     ('PLL', 'Ga Perm', 'R2 U R" U R" U" R U" R2 D U" R" U R D" U'),
     ('PLL', 'Gb Perm', 'y" D R" U" R U D" R2 U R" U R U" R U" R2" U"'),
     ('PLL', 'Gc Perm', 'R2 U" R U" R U R" U R2 D" U R U" R" D U"'),

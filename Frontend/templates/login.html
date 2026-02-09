@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>SpeedSolve | Join the Race</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap' rel='stylesheet'>
 
     <style>
         /* 1. FONT AND VARIABLES */
         @font-face {
             font-family: 'MainFont';
             /* Flask will look for this in your static folder */
-            src: url("{{ url_for('static', filename='mainfont.otf') }}") format('opentype');
+            src: url('{{ url_for('static', filename='mainfont.otf') }}') format('opentype');
         }
 
         :root {
@@ -52,7 +52,7 @@
             height: 100%;
             /* Adds a dark tint over your image so text stays readable */
             background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), 
-                        url("{{ url_for('static', filename='home-background.jpg') }}") no-repeat center center fixed;
+                        url('{{ url_for('static', filename='home-background.jpg') }}') no-repeat center center fixed;
             background-size: cover;
             z-index: -1;
         }
@@ -181,46 +181,46 @@
 </head>
 <body>
 
-    <div class="background-overlay"></div>
+    <div class='background-overlay'></div>
 
-    <div class="auth-container">
-        <div class="form-header">
+    <div class='auth-container'>
+        <div class='form-header'>
             <h1>SPEED<span>SOLVE</span></h1>
-            <p style="color: var(--text-dim); margin-top: 5px;">Ready to break your PB?</p>
+            <p style='color: var(--text-dim); margin-top: 5px;'>Ready to break your PB?</p>
         </div>
 
-        <div class="form-toggle">
-            <button class="toggle-btn active" id="login-toggle">LOGIN</button>
-            <button class="toggle-btn" id="signup-toggle">SIGN UP</button>
+        <div class='form-toggle'>
+            <button class='toggle-btn active' id='login-toggle'>LOGIN</button>
+            <button class='toggle-btn' id='signup-toggle'>SIGN UP</button>
         </div>
 
-        <form id="login-form" class="auth-form">
-            <div class="input-group">
+        <form id='login-form' class='auth-form'>
+            <div class='input-group'>
                 <label>Email</label>
-                <input type="email" placeholder="cuber@example.com" required>
+                <input type='email' placeholder='cuber@example.com' required>
             </div>
-            <div class="input-group">
+            <div class='input-group'>
                 <label>Password</label>
-                <input type="password" placeholder="••••••••" required>
+                <input type='password' placeholder='••••••••' required>
             </div>
-            <button type="submit" class="main-btn">Enter Arena</button>
-            <a href="#" class="forgot-link">Forgot your password?</a>
+            <button type='submit' class='main-btn'>Enter Arena</button>
+            <a href='#' class='forgot-link'>Forgot your password?</a>
         </form>
 
-        <form id="signup-form" class="auth-form hidden">
-            <div class="input-group">
+        <form id='signup-form' class='auth-form hidden'>
+            <div class='input-group'>
                 <label>Username</label>
-                <input type="text" placeholder="Sub10Hunter" required>
+                <input type='text' placeholder='Sub10Hunter' required>
             </div>
-            <div class="input-group">
+            <div class='input-group'>
                 <label>Email</label>
-                <input type="email" placeholder="cuber@example.com" required>
+                <input type='email' placeholder='cuber@example.com' required>
             </div>
-            <div class="input-group">
+            <div class='input-group'>
                 <label>Password</label>
-                <input type="password" placeholder="••••••••" required>
+                <input type='password' placeholder='••••••••' required>
             </div>
-            <button type="submit" class="main-btn">Join League</button>
+            <button type='submit' class='main-btn'>Join League</button>
         </form>
     </div>
 

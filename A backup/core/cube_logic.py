@@ -9,29 +9,6 @@ class Cube:
     def __init__(self):
         self.cube = self.reset()
         # this dictionary stores the method references without calling them, these will be called later by adding the brackets ()
-        # dont think ill be using this yet
-        '''
-        self.pruning_map = {
-            'R': ['R"', 'R2'],
-            'L': ['L"', 'L2'],
-            'U': ['U"', 'U2'],
-            'D': ['D"', 'D2'],
-            'F': ['F"', 'F2'],
-            'B': ['B"', 'B2'],
-            'R"': 'R',
-            'L"': 'L',
-            'U"': 'U',
-            'D"': 'D',
-            'F"': 'F',
-            'B"': 'B',
-            'R2': 'R2',
-            'L2': 'L2',
-            'U2': 'U2',
-            'D2': 'D2',
-            'F2': 'F2',
-            'B2': 'B2'
-        }
-        '''
         self.notation_map = {
             'R': self.R,
             'R"': self.R_prime,

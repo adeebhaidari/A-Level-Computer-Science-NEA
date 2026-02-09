@@ -61,12 +61,10 @@ class Solver(main_cube.Cube):
     
     def heuristic(self, state):
         cube = self.state_to_cube(state)
-        # this is in the form of (x1,y1,f2,x2,y2) where (x1,y1) are the coordinates of where the white edtge faces are meant to be on the white face
+        # this is in the form of (x1,y1,f2,x2,y2) where (x1,y1) are the coordinates of where the white edge faces are meant to be on the white face
         # (f2,x2,y2) is the face and coordinates of the adjacent face of the edge piece that has white as well
         # the letter at the end is the colour of the adjacent edge piece
-        
         # f(n) = g(n) + h(n)
-        
         edges = [
             (0,1,2,2,1,'R'),
             (1,0,1,2,1,'B'),
@@ -175,8 +173,42 @@ class Solver(main_cube.Cube):
     
     # ------------- Solving F2L ---------------- #
     # --> i need to create methods to detect f2l cases, if not found then use a localised A* to move some pieces to then detect any f2l cases
+    '''
+    def side_face_mapping(self):
+        mapping = ''
+        face_indexes = [2,3,5]
+        center_face_colour_indexes = [0,2,3]
+        center_face_colours = [self.cube[index][1,1] for index in center_face_colour_indexes]
+        for face_index in face_indexes:
+            face = self.cube[face_index]
+            for i in range(0,3):
+                for j in range(0,3):
+                    if face[i,j] not in center_face_colours:
+                        mapping += 'X'
+                    else:
+                        for index in center_face_colour_indexes:
+                            if self.cube[index][1,1] == face[i,j]:
+                                mapping += f'{index}'
+                            else:
+                                pass
+        return mapping
+    '''
     
+    def side_face_mapping_f2l(self):
+        mapping = ''
+        face_indexes = [2,3,5]
+        center_face_colours = [0,2,3]
+        for face_index in face_indexes:
+            
+                       
+    def solve_f2l_case(self, mapping):
+        algorithm = self.get_algorithm(mapping)
+        self.apply_move_sequence(algorithm)
+        return self.cube
     
+    def solve_f2l(self):
+        mapping = self.side_face_mapping_f2l()
+        self.solve_f2l_case(mapping)
     
     # ------------- Solving OLL ---------------- #
     def top_face_mapping(self):
@@ -201,26 +233,26 @@ class Solver(main_cube.Cube):
         return mapping
     
     def solve_oll(self):
-            connection = sqlite3.connect('speedcubing.db')
-            cursor = connection.cursor()
-            cursor.execute('SELECT Name FROM Algorithms WHERE CategoryID == 2')
-            names = cursor.fetchall()
-            states = [item[0] for item in names]
-            connection.close()
-            for y_rot in range(4):
-                for u_adj in range(4):
-                    state = ''
-                    state += self.top_face_mapping()
-                    state += self.side_faces_mapping()
-                    if state in states:
-                        algorithm = self.get_algorithm(state)
-                        self.apply_move_sequence(algorithm)
-                        return self.cube, algorithm
-                    self.apply_move('U')
-                self.rotate_y()
-            if np.all(self.cube[5] == 'Y'):
-                return self.cube, ''
-            return self.cube, 'OLL case not recognised.'
+        connection = sqlite3.connect('speedcubing.db')
+        cursor = connection.cursor()
+        cursor.execute('SELECT Name FROM Algorithms WHERE CategoryID == 2')
+        names = cursor.fetchall()
+        states = [item[0] for item in names]
+        connection.close()
+        for y_rot in range(4):
+            for u_adj in range(4):
+                state = ''
+                state += self.top_face_mapping()
+                state += self.side_faces_mapping()
+                if state in states:
+                    algorithm = self.get_algorithm(state)
+                    self.apply_move_sequence(algorithm)
+                    return self.cube, algorithm
+                self.apply_move('U')
+            self.rotate_y()
+        if np.all(self.cube[5] == 'Y'):
+            return self.cube, ''
+        return self.cube, 'OLL case not recognised.'
     
     # ------------- Solving PLL ---------------- #
     def read_pll_state(self):
@@ -252,6 +284,5 @@ class Solver(main_cube.Cube):
     
 if __name__ == '__main__':
     main = Solver()
-    pp(main.scramble())
-    pp(main.cube)
-    pp(main.solve_white_cross())
+    main.apply_move_sequence('R U R" U"')
+    pp(main.side_face_mapping())

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpeedSolve | Algorithm Library</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'MainFont';
+            src: url("{{ url_for('static', filename='mainfont.otf') }}") format('opentype');
+        }
+
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-blue: #38bdf8;
+            --accent-purple: #8b5cf6;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --nav-bg: rgba(15, 23, 42, 0.9);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-top: 100px;
+        }
+
+        /* --- NAVIGATION (Kept for consistency) --- */
+        nav {
+            position: fixed;
+            top: 0; width: 100%; height: 70px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 5%; z-index: 1000;
+        }
+
+        .nav-logo {
+            font-family: 'MainFont', sans-serif;
+            font-size: 1.5rem; font-weight: 800;
+            text-decoration: none; color: var(--text-main);
+        }
+        .nav-logo span { color: var(--accent-blue); }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--text-dim); font-weight: 600; transition: 0.3s; }
+        .nav-links a:hover, .nav-links a.active { color: var(--accent-blue); }
+
+        /* --- LIBRARY LAYOUT --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-header {
+            margin: 40px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--card-bg);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-header h2 {
+            font-family: 'MainFont', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+        }
+
+        .algo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        /* --- ALGORITHM CARD --- */
+        .algo-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .algo-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-blue);
+        }
+
+        .cube-vis {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: #0f172a;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .algo-info h4 {
+            font-size: 1.1rem;
+            color: var(--accent-blue);
+            margin-bottom: 5px;
+        }
+
+        .algo-notation {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: var(--text-main);
+            min-height: 60px;
+        }
+
+        .tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: var(--accent-purple);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="nav-logo">SPEED<span>SOLVE</span></a>
+        <ul class="nav-links">
+            <li><a href="trainer.html">Trainer</a></li>
+            <li><a href="stats.html">Stats</a></li>
+            <li><a href="algorithm_library.html" class="active">Algorithms</a></li>
+            <li><a href="index.html">Practise</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        
+        <div class="section-header">
+            <h2>OLL</h2>
+        </div>
+
+        <div class="algo-grid">
+            {% for algo in oll %}
+            <div class="algo-card">
+                <span class="tag">OLL Case</span>
+                <div class="algo-info">
+                    <h4>{{ algo[0] }}</h4>
+                    
+                    <div class="algo-notation">{{ algo[1] }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="section-header">
+            <h2>PLL</h2>
+            <span style="color: var(--text-dim);">Permutation of Last Layer</span>
+        </div>
+
+        <div class="algo-grid">
+            {% for algo in pll %}
+            <div class="algo-card">
+                <span class="tag">PLL CASE</span>
+                
+                <div class="cube-vis">
+                    <div style="color: var(--text-dim); font-size: 0.8rem;">[ Visual ]</div>
+                </div>
+
+                <div class="algo-info">
+                    <h4>{{ algo[0] }}</h4>
+                    
+                    <div class="algo-notation">{{ algo[1] }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+</body>
+</html>
