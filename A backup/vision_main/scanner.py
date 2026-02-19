@@ -128,6 +128,3 @@ class CubeScanner:
         
         # Return the data formatted as a numpy array for the logical Cube
         return np.array(cube_array)
-
-scanner = CubeScanner()
-print(scanner.run())

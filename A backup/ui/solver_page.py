@@ -1,15 +1,16 @@
-from ursina import Entity, Button, Text, camera, color, Ursina, EditorCamera
-from threed_cube import VisualCube
-from scanner import CubeScanner
-from solver import Solver
+from ursina import Entity, Button, Text, destroy, camera, color, Ursina, EditorCamera, held_keys
+from ui.threed_cube import VisualCube
+from vision_main import scanner
+from core_main import solver
+import numpy as np
 
 class SolverPage(Entity):
     def __init__(self):
         super().__init__(parent=camera.ui)
         self.visual_cube = VisualCube()
         self.visual_cube.x = 3 # this just moves the cube a bit to the right of the window
-        self.solver = Solver()
-        self.scanner = CubeScanner()
+        self.solver = solver.Solver()
+        self.scanner = scanner.CubeScanner()
         
         # this just instantiate the entities for the buttons and its background
         # then pressed, these buttons will also run their specified assigned method
@@ -19,59 +20,184 @@ class SolverPage(Entity):
         self.status_text = Text(parent = self, text = 'Ready', y = -0.1, x = -0.6, origin = (0,0))
         self.cube_faces = []
         
+        self.colours = ['W', 'B', 'R', 'G', 'O', 'Y']
+        self.sticker_buttons = []
+        self.editor_container = Entity(parent=self, enabled=False)
         
+        self.key_map = {
+            'u': 'U', 
+            'd': 'D',
+            'l': 'L', 
+            'r': 'R',
+            'f': 'F',
+            'b': 'B'
+        }
+        
+        self.wide_moves = {
+            'r': ['R', 'M"'],
+            'l': ['L', 'M'],
+            'f': ['F', 'S'],
+        }
+    
+    def input(self, key):
+        # 1. Don't allow manual moves if the solver is currently running
+        if self.visual_cube.moves_queue:
+            return
+
+        # 2. Check if the key pressed is one of our move keys
+        if key in self.key_map:
+            move = self.key_map[key]
+            
+            logical_move = move
+            visual_move = move
+            
+            # 3. If holding Shift, make it a Prime move (e.g., R')
+            # from ursina import held_keys must be at the top of your file
+            if held_keys['shift']:
+                logical_move = move + '"'
+                visual_move = move + "'"
+                
+            # 4. Tell the 3D cube to perform the move
+            self.visual_cube.execute_move(visual_move)
+            try:
+                self.solver.apply_move(logical_move)
+                print(f'Logic sync: applied {logical_move}')
+            except KeyError:
+                print(f'Error: {logical_move} not found in notation map...')
+            
+            # 5. Update the status text so the user knows what they pressed
+            self.status_text.text = f'Manual Move: {move}'
+    
     def run_scan(self):
         self.status_text.text = 'Scanning... Check the pop up window'
         scanned_data = self.scanner.run()
         
         if scanned_data is not None:
+            scanned_data[2] = np.fliplr(scanned_data[2])
+            scanned_data[3] = np.fliplr(scanned_data[3])
+            scanned_data[4] = np.fliplr(scanned_data[4])
+                
             print('Scan is complete!')
             # this feeds the 3d cube the current state of the users scanned cube
             self.visual_cube.recolour_cubies(scanned_data)
             # we now assign the logical cube the state of ghe uers current cube
             self.solver.cube = scanned_data
-            
-            for i in range(0,6):
-                start_x, start_y = 0.6, 0.6
-                for i in range()
-            
-            
-            
-            
+            # we allow the user to manually change any sticker colour
+            self.manual_editor(scanned_data)
             
             self.status_text.text = 'Scan is complete. Ready to solve!'
             self.solve_button.color = color.green
+            # -. need to add the manual coloiur changer here
         else:
             self.status_text.text = 'The scan failed or was cancelled...'
+    
+    def manual_editor(self, data):
+        for button in self.sticker_buttons:
+            destroy(button)
+        self.sticker_buttons = []
+        
+        self.editor_container.enabled = True
+        self.status_text.text = 'Click the stickers to fix the colours if need be, then click CONFIRM'
+        
+        off_set = [
+            (0,-1),
+            (-1,0),
+            (0,0),
+            (1,0),
+            (2,0),
+            (0,1)
+        ]
+        
+        base_x = 0.6
+        base_y = 0.1
+        
+        for face_index, (off_set_x, off_set_y) in enumerate(off_set):
+            for i in range(3):
+                for j in range(3):
+                    position = (
+                        (off_set_x * 0.14) + (j * 0.045),
+                        (off_set_y * 0.14) + (0.09 - i * 0.045)
+                    )
+                    
+                    current_colour = data[face_index][i][j]
+                    button = Button(parent=self.editor_container, model='quad', scale=0.04, position=position, colour=self.visual_cube.COLOUR_LOOKUP.get(current_colour, color.gray))
+                    button.face = face_index
+                    button.row = i
+                    button.col = j
+                    button.c_code = current_colour
+                    button.on_click = lambda b = button: self.cycle_colour(b)
+                    self.sticker_buttons.append(button)
+
+        self.confirm_button = Button(
+            parent=self.editor_container,
+            text='CONFIRM',
+            scale=(0.15, 0.04),
+            y=-0.3,
+            x=base_x + 0.07,
+            color=color.green,
+            on_click=self.manual_edits # --> ...
+        )
+    
+    def cycle_colour(self, button):
+        index = self.colours.index(button.c_code) if button.c_code in self.colours else -1
+        next_index = (index + 1) % len(self.colours)
+        button.c_code = self.colours[next_index]
+        button.color = self.visual_cube.COLOUR_LOOKUP[button.c_code]
+    
+    def manual_edits(self):
+        new_data = np.full((6,3,3), '?', dtype = object)
+        for button in self.sticker_buttons:
+            new_data[button.face][button.row][button.col] = button.c_code
+        
+        self.visual_cube.recolour_cubies(new_data)
+        self.solver.cube = new_data
+        
+        self.editor_container.enabled = False
+        self.status_text.text = 'Cube colours have been updated!'
     
     def run_solve(self):
         if not self.visual_cube.moves_queue:
             self.status_text.text = 'Computing solution...'
-        
             full_solution = []
-            # here we will not compuete the solution to each the white cross, f2l, oll and pll separately and then put them all together in the right order and append it into the solutions array
-            '''
-            white_cross_solution, _ = self.solver.solve_white_cross()
-            if white_cross_solution:
-                full_solution.extend(white_cross_solution)
-            _, oll_solution = self.solver.solve_oll()
-            #
-            # this section will be for f2l once its finished
-            #
-            if oll_solution:
-                full_solution.extend(oll_solution.split())
-            '''
-            _, pll_solution = self.solver.solve_pll()
-            if pll_solution:
-                full_solution.extend(pll_solution.split())
+            
+            step_order = [
+                self.solver.solve_white_cross,
+                self.solver.solve_white_corners,
+                self.solver.solve_f2l_edges,
+                self.solver.solve_oll,
+                self.solver.solve_pll
+            ]
+            
+            for step in step_order:
+                solution = step()
+                if solution and solution[0]:
+                    full_solution.extend(solution[0])
+
+            visual_ready_solution = []
+            for move in full_solution:
+                # Clean the move string (Solver uses " for prime, Ursina uses ')
+                clean_move = move.replace('"', "'")
+                base = clean_move[0]
+                is_prime = "'" in clean_move
+
+                if base.islower() and base in self.wide_moves:
+                    # It's a wide move, get the two-move component list
+                    components = self.wide_moves[base]
+                    for comp in components:
+                        # If the original wide move was prime, invert the components
+                        if is_prime:
+                            # If comp already has a ', remove it. If not, add it.
+                            final_comp = comp[0] if "'" in comp else comp + "'"
+                            visual_ready_solution.append(final_comp)
+                        else:
+                            visual_ready_solution.append(comp)
+                else:
+                    # It's a normal move (U, R, F, etc.)
+                    visual_ready_solution.append(clean_move)
+            
             print(f'Solution found!: {full_solution}')
             self.status_text.text = f'Solving: {len(full_solution)} moves'
             
             # we now need to feed this information to the 3d cube and the moves queue so its executed in the right order correctly
             self.visual_cube.moves_queue = full_solution
             self.visual_cube.process_queue()
-
-app = Ursina()
-solver_page = SolverPage()
-EditorCamera()
-app.run()

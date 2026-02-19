@@ -470,7 +470,3 @@ class Cube:
         complete_scramble = ' '.join(scramble)
         self.apply_move_sequence(complete_scramble)
         return complete_scramble
-
-cube = Cube()
-cube.rotate_y()
-print(cube.cube[2])

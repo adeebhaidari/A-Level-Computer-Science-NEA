@@ -107,7 +107,7 @@ class VisualCube(Entity):
         
         self.rotation_helper.animate_rotation(rotation, duration=0.25)
         # after executing a single turn, we need to tell the app that it should wait themn it should run the logic which resets the parent entity of the cubies
-        invoke(self.reset_cubie_parents, delay=0.3)
+        invoke(self.reset_cubie_parents, delay = 0.5)
 
     def reset_cubie_parents(self):
         for cubie in self.cubies:
@@ -123,33 +123,58 @@ class VisualCube(Entity):
             move = self.moves_queue.pop(0)
             self.execute_move(move)
     
-    def execute_move(self, moves):
-        move = moves[0]
-        base, modifier = move[1:] if len(moves) > 1 else ''
+    def execute_move(self, move):
+        if not move or self.is_animating:
+            return
         
-        # as mentioned in my nea documentation in the analysis section, a move can be represented as X" or X2 where " is the inverse of the move and where 2 means the move is executed twice, so the base is the move X and the way to execute it is the modifier
-        if base == 'R':
-            axis, layer, direction = 'x', 1, -1
-        elif base == 'L':
-            axis, layer, direction = 'x', -1, 1
-        elif base == 'U':
-            axis, layer, direction = 'y', 1, 1
-        elif base == 'D':
-            axis, layer, direction = 'y', -1, -1
-        elif base == 'F':
-            axis, layer, direction = 'z', -1, -1
-        elif base == 'B':
-            axis, layer, direction = 'z', 1, 1
+        base = move[0]
+        modifier = move[1:] if len(move) > 1 else ''
         
-        if modifier == '"':
-            direction *= -1 # this negates the direction of the move to exeite the inversen of it
-        if modifier == '2':
-            # since the modifier 2 means a double turn, we enqueue the same move twice to the front so resemble the move being exeuted twice
-            self.moves_queue.insert(0, base)
+        move_map = {
+            'R': ('x', 1, 1),
+            'L': ('x', -1, -1),
+            'U': ('y', 1, 1),
+            'D': ('y', -1, -1),
+            'F': ('z', -1, 1),
+            'B': ('z', 1, -1),
+            'y': ('y', 'all', -1),
+            'x': ('x', 'all', -1),
+            'z': ('z', 'all', -1)
+        }
         
-        self.rotate_side(axis, layer, direction)
+        if base not in move_map:
+            return
+        
+        axis, layer, direction = move_map[base]
+        
+        if '"' in modifier:
+            direction *= -1
+        
+        if '2' in modifier:
+            direction *= 2
+        
+        if layer == 'all':
+            self.rotate_cube(axis, direction)
+        else:
+            self.rotate_side(axis, layer, direction)
+    
+    def rotate_cube(self, axis, direction):
+        if self.is_animating:
+            return
+        self.is_animating = True
+        
+        self.rotation_helper.rotation = (0,0,0)
+        for cubie in self.cubies:
+            cubie.parent = self.rotation_helper
+        
+        rotation_vector = Vec3(0,0,0)
+        setattr(rotation_vector, axis, 90 * direction)
+        
+        self.rotation_helper.animate_rotation(rotation_vector, duration = 0.25)
+        invoke(self.reset_cubie_parents, delay = 0.5)
 
- 
+
+'''
 app = Ursina()
 
 cube = VisualCube()
@@ -167,3 +192,4 @@ def input(key):
 
 # this adds a camera you can control with right cliking and scrolling
 EditorCamera()
+'''
