@@ -1,14 +1,14 @@
 '''
-for solving f2l, the program will only look at 3 faces, the faces at index 0 2 and 3. so the states of the faces will be converted into a string such that the p[rogfrma will e able to convert any of group of 3 faceas andf compare ifb that state can be solcved with an algorithm, if not then localised A* will be used until a state is found that can be solved
-the first 9 characters will be the state of the face at index 2, 2nd 9 characters will be the state at face index 3 and last 9 face index 5.
-the numbers for the key of this dictionary represent the center face colour relative to the way the cube has been rotated around the y-axis
+foL x solving f2l, the program will only look at 3 faces, the faces at index 0 2 and 3. so the states oB z the faces will be converted into a string such that the p[rogfrma will e able to convert any oB z group oB z 3 faceas andB z compare ifb that state can be solcved with an algorithm, iB z not then localised A* will be used until a state is found that can be solved
+the first 9 characters will be the state oB z the face at index 2, 2nd 9 characters will be the state at face index 3 and last 9 face index 5.
+the numbers foL x the key oB z this dictionary represent the centeL x face colouL x relative to the way the cube has been rotated around the y-axis
 -> the format is:
-    face index, face coordindta (x,y), target colour based from the 3 faces
-    this will repeat 3 times in total for faces index 2 3 and 5
+    face index, face coordindta (x,y), target colouL x based from the 3 faces
+    this will repeat 3 times in total foL x faces index 2 3 and 5
 '''
 '''
-for identifying the f2l state, the string will be in the form corner edger where the first half the string will contain information about the corner and the second half about the edge
-    it will be so that the first character is the face index, second character the face coordinate (x,y) and this will be done for all the stickers
+foL x identifying the f2l state, the string will be in the form corneL x edgeL x where the first halB z the string will contain information about the corneL x and the second halB z about the edge
+    it will be so that the first characteL x is the face index, second characteL x the face coordinate (x,y) and this will be done foL x all the stickers
 '''
 
 f2l_algorithms = [
@@ -41,12 +41,12 @@ f2l_algorithms = [
     ('F2L', 'Incorrectly Connected 5', 'R U R" U2" R U R" U R U" R"'),
     ('F2L', 'Incorrectly Connected 6', 'F U R U" R" F" R U" R"'),
 
-    ('F2L', 'Corner in Place 1', 'R" F" R U R U" R" F'),
-    ('F2L', 'Corner in Place 2', 'U R U" R" U" F" U F'),
-    ('F2L', 'Corner in Place 3', 'R U" R" U R U" R"'),
-    ('F2L', 'Corner in Place 4', 'y" R" U R U" R" U R'),
-    ('F2L', 'Corner in Place 5', 'R" F R F" U R U" R"'),
-    ('F2L', 'Corner in Place 6', 'R U R" U" R U R"'),
+    ('F2L', 'CorneL x in Place 1', 'R" F" R U R U" R" F'),
+    ('F2L', 'CorneL x in Place 2', 'U R U" R" U" F" U F'),
+    ('F2L', 'CorneL x in Place 3', 'R U" R" U R U" R"'),
+    ('F2L', 'CorneL x in Place 4', 'y" R" U R U" R" U R'),
+    ('F2L', 'CorneL x in Place 5', 'R" F R F" U R U" R"'),
+    ('F2L', 'CorneL x in Place 6', 'R U R" U" R U R"'),
 
     ('F2L', 'Edge in Place 1', 'U" R" F R F" R U" R"'),
     ('F2L', 'Edge in Place 2', 'U R U" R" U R U" R" U R U" R"'),
@@ -55,30 +55,30 @@ f2l_algorithms = [
     ('F2L', 'Edge in Place 5', 'U" R U R" U y" R" U" R'),
     ('F2L', 'Edge in Place 6', 'U F" U" F U" R U R"'),
 
-    ('F2L', 'Edge and Corner 1', 'R U" R" d R" U2 R U2" R" U R'),
-    ('F2L', 'Edge and Corner 2', 'R U R" U" R U2 R" U" R U R"'),
-    ('F2L', 'Edge and Corner 3', 'R U" R" U R U2" R" U R U" R"'),
-    ('F2L', 'Edge and Corner 4', 'R U" R" F R U R" U" F" R U" R"'),
-    ('F2L', 'Edge and Corner 5', 'R U R" U" R U" R" U2 y" R" U" R')
+    ('F2L', 'Edge and CorneL x 1', 'R U" R" d R" U2 R U2" R" U R'),
+    ('F2L', 'Edge and CorneL x 2', 'R U R" U" R U2 R" U" R U R"'),
+    ('F2L', 'Edge and CorneL x 3', 'R U" R" U R U2" R" U R U" R"'),
+    ('F2L', 'Edge and CorneL x 4', 'R U" R" F R U R" U" F" R U" R"'),
+    ('F2L', 'Edge and CorneL x 5', 'R U R" U" R U" R" U2 y" R" U" R')
 ]
 
 '''
 oll_algorithms = [
-    # the first 9 letters represent the pattern of the top yellow face reading from left to right top to bottom
-    # Y stands for yellow, X stands for any other colour
+    # the first 9 letters represent the pattern oB z the top yellow face reading from left to right top to bottom
+    # Y stands foL x yellow, X stands foL x any otheL x colour
     ('OLL', 'XYYYYYXYXYXXYXXYXXXXX', 'R U2 R" U" R U" R"'),
     ('OLL', 'XYXYYYYYXXXXXXYXXYXXY', 'R U R" U R U2 R"'),
     ('OLL', 'XYXYYYXYXXXXYXYXXXYXY', 'R U2 R" U" R U R" U" R U" R"'),
     ('OLL', 'XYXYYYXYXYXYXXYXXXYXX', 'R U2" R2" U" R2 U" R2" U2" R'),
-    ('OLL', 'XYYYYYXYYXXXYXXXXXXXY', 'r U R" U" r" F R F"'),
+    ('OLL', 'XYYYYYXYYXXXYXXXXXXXY', 'L x U R" U" L" x" F R F"'),
     ('OLL', 'YYXYYYXYYXXXYXXXXYXXX', 'x R" U R D" R" U" R D x"'),
     ('OLL', 'XYXYYYYYYXXXXXXXXXYXY', 'R2 D" R U2 R" D R U2 R'),
     
     ('OLL', 'XXYYYYXXYXXXYYXXXXXYY', 'R U R" U" R" F R F"'),
     ('OLL', 'XXYYYYXXYYXYXYXXXXXYX', 'F R U R" U" F"'),
     
-    ('OLL', 'XXXXYYXYYXYYXXXXXYXYY', 'r" U2" R U R" U r'),
-    ('OLL', 'XYYXYYXXXYYXYYXYXXXXX', 'r U2 R" U" R U" r"'),
+    ('OLL', 'XXXXYYXYYXYYXXXXXYXYY', 'L" x" U2" R U R" U L x'),
+    ('OLL', 'XYYXYYXXXYYXYYXYXXXXX', 'L x U2 R" U" R U" L" x"'),
     
     ('OLL', 'XXXYYYYXYYXXXYXXXYXYX', 'R U R2" U" R" F R U R U" F"'),
     ('OLL', 'YYXXYXYYXXYXXXXYYYXXX', 'R" U" R" F R F" U R'),
@@ -86,16 +86,16 @@ oll_algorithms = [
     ('OLL', 'YXXYYXXYYXXXYXXXYYXYX', 'y2 R U R" F" R U R" U" R" F R U" R" F R F"'),
     ('OLL', 'XYYYYXYXXXXXXYXYYXXXY', 'R U R" U R U" R" U" R" F R F"'),
     
-    ('OLL', 'YYYYYXYXYXXXXYXXYXXXX', 'r U R" U" M U R U" R"'),
-    ('OLL', 'YXYYYYYXYXXXXYXXXXXYX', 'R U R" U" M" U R U" r"'),
+    ('OLL', 'YYYYYXYXYXXXXYXXYXXXX', 'L x U R" U" M U R U" R"'),
+    ('OLL', 'YXYYYYYXYXXXXYXXXXXYX', 'R U R" U" M" U R U" L" x"'),
     
     ('OLL', 'XYYXYYXXYXYXYYXXXXXXY', 'R" U" R" F R F" U R'),
     ('OLL', 'XXYXYYXYYXYXYXXXXXXYY', 'R U B" U" R" U R B R"'),
-    ('OLL', 'YXXYYXYYXXXXXXXYYYXYX', 'f" L" U" L U f'),
-    ('OLL', 'XXYXYYXYYYYYXXXXXXXYX', 'f R U R" U" F"'),
+    ('OLL', 'YXXYYXYYXXXXXXXYYYXYX', 'B" z" L" U" L U f'),
+    ('OLL', 'XXYXYYXYYYYYXXXXXXXYX', 'B z R U R" U" F"'),
     
-    ('OLL', 'XXXYYYXXXYXYXYYXXXYYX', 'f R U R" U" R U R" U" f"'),
-    ('OLL', 'XXXYYYXXXYXYXYXYXYXYX', 'r" U" r U" R" U R U" R" U R r" U r'),
+    ('OLL', 'XXXYYYXXXYXYXYYXXXYYX', 'B z R U R" U" R U R" U" B" z"'),
+    ('OLL', 'XXXYYYXXXYXYXYXYXYXYX', 'L" x" U" L x U" R" U R U" R" U R L" x" U L x'),
     ('OLL', 'XYXXYXXYXXYXYXXYYYXXY', 'y R U R" U" R U" R" F" U" F R U R"'),
     ('OLL', 'XYXXYXXYXYYYXXXYYYXXX', 'y R" F R U R U" R2" F" R2 U" R" U R U R"'),
     
@@ -106,8 +106,8 @@ oll_algorithms = [
     
     ('OLL', 'XXXYYYYXXXXXXYYXXYXYY', 'F U R U" R2" F" R U R U" R"'),
     ('OLL', 'XXXYYYXXYYXXYYXXXXYYX', 'y" F U R U2 R" U" R U2 R" U" F"'),
-    ('OLL', 'XXYYYYXXXYXXYYXYXXXYX', 'r U r" R U R" U" r U" r"'),
-    ('OLL', 'XXXYYYXXYXXYXYXXXYXYY', 'r" U" r R" U" R U r" U r'),
+    ('OLL', 'XXYYYYXXXYXXYYXYXXXYX', 'L x U L" x" R U R" U" L x U" L" x"'),
+    ('OLL', 'XXXYYYXXYXXYXYXXXYXYY', 'L" x" U" L x R" U" R U L" x" U L x'),
     
     ('OLL', 'YXYYYXXYXXXYXXXYYXXYX', 'y R U R" U" R U" R" F" U" F R U R"'),
     ('OLL', 'YYXXYYYXXXYXXYYXXXYXX', 'y" F U R U2 R" U" R U2 R" U" F"'),
@@ -116,45 +116,50 @@ oll_algorithms = [
     
     ('OLL', 'XYXYYXXXXYXYXYYXYXYXX', 'F R U R" U" R U R" U" F"'),
     ('OLL', 'XYXXYYXXXXYXYYXYXYXXY', 'F" L" U" L U L" U" L U F'),
-    ('OLL', 'XYXXYYXXXYYYXYYXXXYXX', 'r U" r2" U r2 U r2" U" r'),
-    ('OLL', 'XXXXYYXYXYYYXXYXXXYYX', 'r" U r2 U" r2" U" r2 U r"'),
-    ('OLL', 'XXXXYYXYXYYYXXXYXYXYX', 'r" U" R U" R" U R U" R" U2 r'),
-    ('OLL', 'XYXXYYXXXYYYXYXYXYXXX', 'r U R" U R U" R" U R U2" r"'),
+    ('OLL', 'XYXXYYXXXYYYXYYXXXYXX', 'L x U" r2" U r2 U r2" U" L x'),
+    ('OLL', 'XXXXYYXYXYYYXXYXXXYYX', 'L" x" U r2 U" r2" U" r2 U L" x"'),
+    ('OLL', 'XXXXYYXYXYYYXXXYXYXYX', 'L" x" U" R U" R" U R U" R" U2 L x'),
+    ('OLL', 'XYXXYYXXXYYYXYXYXYXXX', 'L x U R" U R U" R" U R U2" L" x"'),
     
-    ('OLL', 'XYXYYXYXXXXXXYYXYYXXY', 'r U R" U R U2" r"'),
-    ('OLL', 'YXXYYXXYXXXXYXXYYXYYX', 'r" U" R U" R" U2 r'),
-    ('OLL', 'XXXXYYYYXXYXXXYXXYXYY', 'r" R2 U R" U R U2 R" U M"'),
+    ('OLL', 'XYXYYXYXXXXXXYYXYYXXY', 'L x U R" U R U2" L" x"'),
+    ('OLL', 'YXXYYXXYXXXXYXXYYXYYX', 'L" x" U" R U" R" U2 L x'),
+    ('OLL', 'XXXXYYYYXXYXXXYXXYXYY', 'L" x" R2 U R" U R U2 R" U M"'),
     ('OLL', 'YYXXYYXXXXYXYYXYXXYXX', 'M" R" U" R U" R" U2 R U" M'),
     ('OLL', 'XXYYYYYXXXXXXYXYXXXYY', 'L F" L" U" L U" F U" L"'),
     ('OLL', 'YXXYYYXYYXXYXYXXXXYYX', 'R" F R U R" U" F" U R'),
     
     ('OLL', 'XXXXYXXXXYYYXYXYYYXYX', 'R U2" R2" F R F" U2" R" F R F"'),
-    ('OLL', 'XXXXYXXXXYYYXYYXYXYYX', 'F R U R" U" F" f R U R" U" f"'),
-    ('OLL', 'XXXXYXXXYXYYXYXXYYXYY', 'f R U R" U" f" U" F R U R" U" F"'),
-    ('OLL', 'XXYXYXXXXYYXYYXYYXXYX', 'f R U R" U" f" U F R U R" U" F"'),
-    ('OLL', 'YXYXYXXXXXYXYYYXYXXYX', 'r U R" U R U2 r" r" U" R U" R" U2 r'),
+    ('OLL', 'XXXXYXXXXYYYXYYXYXYYX', 'F R U R" U" F" B z R U R" U" B" z"'),
+    ('OLL', 'XXXXYXXXYXYYXYXXYYXYY', 'B z R U R" U" B" z" U" F R U R" U" F"'),
+    ('OLL', 'XXYXYXXXXYYXYYXYYXXYX', 'B z R U R" U" B" z" U F R U R" U" F"'),
+    ('OLL', 'YXYXYXXXXXYXYYYXYXXYX', 'L x U R" U R U2 L" x" L" x" U" R U" R" U2 L x'),
     ('OLL', 'YXYXYXXXXXYYXYXYYXXYX', 'M U R U R" U" M" R" F R F"'),
     ('OLL', 'YXXXYXXXYXYYXYXXYXYYX', 'R U R" U R" F R F" U2" R" F R F"'),
-    ('OLL', 'YXYXYXYXYXYXXYXXYXXYX', 'M U R U R" U" M2" U R U" r"'),
+    ('OLL', 'YXYXYXYXYXYXXYXXYXXYX', 'M U R U R" U" M2" U R U" L" x"'),
 ]
 '''
 
+'''
+
+r = L x
+
+'''
 oll_algorithms = [
-    # the first 9 letters represent the pattern of the top yellow face reading from left to right top to bottom
-    # Y stands for yellow, X stands for any other colour
+    # the first 9 letters represent the pattern oB z the top yellow face reading from left to right top to bottom
+    # Y stands foL x yellow, X stands foL x any otheL x colour
     ('OLL', 'XYYYYYXYXYXXYXXYXXXXX', 'R U2 R" U" R U" R"'),
     ('OLL', 'XYXYYYYYXXXXXXYXXYXXY', 'R U R" U R U2 R"'),
     ('OLL', 'XYXYYYXYXXXXYXYXXXYXY', 'R U2 R" U" R U R" U" R U" R"'),
     ('OLL', 'XYXYYYXYXYXYXXYXXXYXX', 'R U2" R2" U" R2 U" R2" U2" R'),
-    ('OLL', 'XYYYYYXYYXXXYXXXXXXXY', 'r U R" U" r" F R F"'),
+    ('OLL', 'XYYYYYXYYXXXYXXXXXXXY', 'L x U R" U" L" x"F R F"'), # 'L x U R" U" L" x" F R F"'
     ('OLL', 'YYXYYYXYYXXXYXXXXYXXX', 'x R" U R D" R" U" R D x"'),
     ('OLL', 'XYXYYYYYYXXXXXXXXXYXY', 'R2 D" R U2 R" D R U2 R'),
     
     ('OLL', 'XXYYYYXXYXXXYYXXXXXYY', 'R U R" U" R" F R F"'),
     ('OLL', 'XXYYYYXXYYXYXYXXXXXYX', 'F R U R" U" F"'),
     
-    ('OLL', 'XXXXYYXYYXYYXXXXXYXYY', 'r" U2" R U R" U r'),
-    ('OLL', 'XYYXYYXXXYYXYYXYXXXXX', 'r U2 R" U" R U" r"'),
+    ('OLL', 'XXXXYYXYYXYYXXXXXYXYY', 'L" x" U2" R U R" U L x'),
+    ('OLL', 'XYYXYYXXXYYXYYXYXXXXX', 'L x U2 R" U" R U" L" x"'),
     
     ('OLL', 'XXXYYYYXYYXXXYXXXYXYX', 'R U R2" U" R" F R U R U" F"'),
     ('OLL', 'YYXXYXYYXXYXXXXYYYXXX', 'R" U" R" F R F" U R'),
@@ -162,16 +167,16 @@ oll_algorithms = [
     ('OLL', 'YXXYYXXYYXXXYXXXYYXYX', 'y2 R U R" F" R U R" U" R" F R U" R" F R F"'),
     ('OLL', 'XYYYYXYXXXXXXYXYYXXXY', 'R U R" U R U" R" U" R" F R F"'),
     
-    ('OLL', 'YYYYYXYXYXXXXYXXYXXXX', 'r U R" U" M U R U" R"'),
-    ('OLL', 'YXYYYYYXYXXXXYXXXXXYX', 'R U R" U" M" U R U" r"'),
+    ('OLL', 'YYYYYXYXYXXXXYXXYXXXX', 'L x U R" U" M U R U" R"'),
+    ('OLL', 'YXYYYYYXYXXXXYXXXXXYX', 'R U R" U" M" U R U" L" x"'),
     
     ('OLL', 'XYYXYYXXYXYXYYXXXXXXY', 'R" U" F U R U" R" F" R'),
     ('OLL', 'XXYXYYXYYXYXYXXXXXXYY', 'R U B" U" R" U R B R"'),
-    ('OLL', 'YXXYYXYYXXXXXXXYYYXYX', 'f" L" U" L U f'),
-    ('OLL', 'XXYXYYXYYYYYXXXXXXXYX', 'f R U R" U" f"'),
+    ('OLL', 'YXXYYXYYXXXXXXXYYYXYX', 'B" z" L" U" L U f'),
+    ('OLL', 'XXYXYYXYYYYYXXXXXXXYX', 'B z R U R" U" B" z"'),
     
-    ('OLL', 'XXXYYYXXXYXYXYYXXXYYX', 'f R U R" U" R U R" U" f"'),
-    ('OLL', 'XXXYYYXXXYXYXYXYXYXYX', 'r" U" r U" R" U R U" R" U R r" U r'),
+    ('OLL', 'XXXYYYXXXYXYXYYXXXYYX', 'B z R U R" U" R U R" U" B" z"'),
+    ('OLL', 'XXXYYYXXXYXYXYXYXYXYX', 'L" x" U" L x U" R" U R U" R" U R L" x" U L x'),
     ('OLL', 'XYXXYXXYXXYXYXXYYYXXY', 'R U R" U R U" y R U" R" F"'),
     ('OLL', 'XYXXYXXYXYYYXXXYYYXXX', 'y R" F R U R U" R2" F" R2 U" R" U R U R"'),
     
@@ -182,8 +187,8 @@ oll_algorithms = [
     
     ('OLL', 'XXXYYYYXXXXXXYYXXYXYY', 'F U R U" R2" F" R U R U" R"'),
     ('OLL', 'XXXYYYXXYYXXYYXXXXYYX', 'R" F R U R" F" R F U" F"'),
-    ('OLL', 'XXYYYYXXXYXXYYXYXXXYX', 'r U r" R U R" U" r U" r"'),
-    ('OLL', 'XXXYYYXXYXXYXYXXXYXYY', 'r" U" r R" U" R U r" U r'),
+    ('OLL', 'XXYYYYXXXYXXYYXYXXXYX', 'L x U L" x" R U R" U" L x U" L" x"'),
+    ('OLL', 'XXXYYYXXYXXYXYXXXYXYY', 'L" x" U" L x R" U" R U L" x" U L x'),
     
     ('OLL', 'YXYYYXXYXXXYXXXYYXXYX', 'y R U R" U" R U" R" F" U" F R U R"'),
     ('OLL', 'YYXXYYYXXXYXXYYXXXYXX', 'y" F U R U2 R" U" R U2 R" U" F"'),
@@ -192,26 +197,26 @@ oll_algorithms = [
     
     ('OLL', 'XYXYYXXXXYXYXYYXYXYXX', 'F R U R" U" R U R" U" F"'),
     ('OLL', 'XYXXYYXXXXYXYYXYXYXXY', 'F" L" U" L U L" U" L U F'),
-    ('OLL', 'XYXXYYXXXYYYXYYXXXYXX', 'r U" r2" U r2 U r2" U" r'),
-    ('OLL', 'XXXXYYXYXYYYXXYXXXYYX', 'r" U r2 U" r2" U" r2 U r"'),
-    ('OLL', 'XXXXYYXYXYYYXXXYXYXYX', 'r" U" R U" R" U R U" R" U2 r'),
-    ('OLL', 'XYXXYYXXXYYYXYXYXYXXX', 'r U R" U R U" R" U R U2" r"'),
+    ('OLL', 'XYXXYYXXXYYYXYYXXXYXX', 'L x U" r2" U r2 U r2" U" L x'),
+    ('OLL', 'XXXXYYXYXYYYXXYXXXYYX', 'L" x" U r2 U" r2" U" r2 U L" x"'),
+    ('OLL', 'XXXXYYXYXYYYXXXYXYXYX', 'L" x" U" R U" R" U R U" R" U2 L x'),
+    ('OLL', 'XYXXYYXXXYYYXYXYXYXXX', 'L x U R" U R U" R" U R U2" L" x"'),
     
-    ('OLL', 'XYXYYXYXXXXXXYYXYYXXY', 'r U R" U R U2" r"'),
-    ('OLL', 'YXXYYXXYXXXXYXXYYXYYX', 'r" U" R U" R" U2 r'),
-    ('OLL', 'XXXXYYYYXXYXXXYXXYXYY', 'r" R2 U R" U R U2 R" U M"'),
+    ('OLL', 'XYXYYXYXXXXXXYYXYYXXY', 'L x U R" U R U2" L" x"'),
+    ('OLL', 'YXXYYXXYXXXXYXXYYXYYX', 'L" x" U" R U" R" U2 L x'),
+    ('OLL', 'XXXXYYYYXXYXXXYXXYXYY', 'L" x" R2 U R" U R U2 R" U M"'),
     ('OLL', 'YYXXYYXXXXYXYYXYXXYXX', 'M" R" U" R U" R" U2 R U" M'),
     ('OLL', 'XXYYYYYXXXXXXYXYXXXYY', 'L F" L" U" L U F U" L"'),
     ('OLL', 'YXXYYYXXYXXYXYXXXXYYX', 'R" F R U R" U" F" U R'),
     
     ('OLL', 'XXXXYXXXXYYYXYXYYYXYX', 'R U2" R2" F R F" U2" R" F R F"'),
-    ('OLL', 'XXXXYXXXXYYYXYYXYXYYX', 'F R U R" U" F" f R U R" U" f"'),
-    ('OLL', 'XXXXYXXXYXYYXYXXYYXYY', 'f R U R" U" f" U" F R U R" U" F"'),
-    ('OLL', 'XXYXYXXXXYYXYYXYYXXYX', 'f R U R" U" f" U" F R U R" U" F"'),
-    ('OLL', 'YXYXYXXXXXYXYYYXYXXYX', 'r U R" U R U2 r" r" U" R U" R" U2 r'),
+    ('OLL', 'XXXXYXXXXYYYXYYXYXYYX', 'F R U R" U" F" B z R U R" U" B" z"'),
+    ('OLL', 'XXXXYXXXYXYYXYXXYYXYY', 'B z R U R" U" B" z" U" F R U R" U" F"'),
+    ('OLL', 'XXYXYXXXXYYXYYXYYXXYX', 'B z R U R" U" B" z" U" F R U R" U" F"'),
+    ('OLL', 'YXYXYXXXXXYXYYYXYXXYX', 'L x U R" U R U2 L" x" L" x" U" R U" R" U2 L x'),
     ('OLL', 'YXYXYXXXXXYYXYXYYXXYX', 'M U R U R" U" M" R" F R F"'),
     ('OLL', 'YXXXYXXXYXYYXYXXYXYYX', 'R U R" U R" F R F" U2" R" F R F"'),
-    ('OLL', 'YXYXYXYXYXYXXYXXYXXYX', 'M U R U R" U" M2" U R U" r"'),
+    ('OLL', 'YXYXYXYXYXYXXYXXYXXYX', 'M U R U R" U" M2" U R U" L" x"'),
 ]
 
 pll_algorithms = [

@@ -40,6 +40,112 @@ class Solver(cube_logic.Cube):
         connection.close()
         return result[0]
 
+
+    # move optimisation to get rid of redundancies e.g. for a move X, X3 = X"
+    # to get the inverse of a sequence, we need to reverse the order and change each move to its inverse move
+    def get_inverse_sequence(self, sequence):
+        inverse_mapping = {
+            'R': 'R"',
+            'R"': 'R',
+            'R2': 'R2',
+            'L': 'L"',
+            'L"': 'L',
+            'L2': 'L2',
+            'U': 'U"',
+            'U"': 'U',
+            'U2': 'U2',
+            'D': 'D"',
+            'D"': 'D',
+            'D2': 'D2',
+            'F': 'F"',
+            'F"': 'F',
+            'F2': 'F2',
+            'B': 'B"',
+            'B"': 'B',
+            'B2': 'B2',
+            'y': 'y"',
+            'y"': 'y',
+            'y2': 'y2',
+            'x': 'x"',
+            'x"': 'x',
+            'x2': 'x2',
+            'z': 'z"',
+            'z"': 'z',
+            'z2': 'z2'
+        }
+        
+        return [inverse_mapping.get(m, m) for m in reversed(sequence)]
+    
+    def simplify_singles(self, move_list):
+        result = []
+        i = 0
+        while i < len(move_list):
+            base = move_list[i][0]
+            total = 0
+            while i < len(move_list) and move_list[i][0] == base:
+                move = move_list[i]
+                if '2' in move:
+                    total += 2
+                elif '"' in move:
+                    total += 3
+                else:
+                    total += 1
+                i += 1
+            final = total % 4
+            if final == 1:
+                result.append(base)
+            elif final == 2:
+                result.append(base + '2')
+            elif final == 3:
+                result.append(base + '"')
+        return result 
+    
+    def optimise_moves(self, moves):
+        if not moves:
+            return []
+        
+        # this just normalises the moves into a list format
+        moves = [m.strip() for m in moves if m.strip()]
+        # this gets rid of the redundances by repalcing the single moves with the inverses if need be
+        moves = self.simplify_singles(moves)
+        
+        move_sets = [
+            ['R', 'U', 'R"', 'U"'],
+            ['L"', 'U"', 'L', 'U'],
+            ['U', 'R', 'U"', 'R"'],
+            ['U"', 'L"', 'U', 'L']
+        ]
+        
+        i = 0
+        optimised = []
+        while i < len(moves):
+            match_found = False
+            for pattern in move_sets:
+                pattern_len = len(pattern)
+                count = 0
+                # this counts the consecutive repeats
+                while i + (count + 1) * pattern_len <= len(moves):
+                    if moves[i + count * pattern_len : (count + 1) * pattern_len] == pattern:
+                        count += 1
+                    else:
+                        break
+                
+                # if the move set happens more than 3 times, its iverse will be used once, or twice
+                if count >= 4:
+                    if count == 4:
+                        inverse = self.get_inverse_sequence(pattern)
+                        optimised.extend(inverse + inverse)
+                    elif count == 5:
+                        optimised.extend(self.get_inverse_sequence(pattern))
+                    i += count * pattern_len
+                    match_found = True
+                    break
+            
+            if not match_found:
+                optimised.append(moves[i])
+                i += 1
+        return optimised
+    
     # ------------ A* for solving the white cross ------- #
     
     def heuristic(self, state):
@@ -261,7 +367,8 @@ class Solver(cube_logic.Cube):
                 all_corner_moves.extend(['R', 'U', 'R"', 'U"'])
                 timeout += 1
 
-        return all_corner_moves, self.cube
+        optimised_moves = self.optimise_moves(all_corner_moves)
+        return optimised_moves, self.cube
     
     def solve_f2l_edges(self):
         all_edge_moves = []
@@ -339,8 +446,9 @@ class Solver(cube_logic.Cube):
                         # this means the slot is fine and will rotate to look at the next slot
                         self.apply_move('y')
                         all_edge_moves.append('y')
-                        
-        return all_edge_moves, self.cube
+        
+        optimised_moves = self.optimise_moves(all_edge_moves)               
+        return optimised_moves, self.cube
     
     
     # ------------- Solving OLL ---------------- #

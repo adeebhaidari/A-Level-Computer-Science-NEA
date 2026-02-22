@@ -87,7 +87,6 @@ class SolverPage(Entity):
             
             self.status_text.text = 'Scan is complete. Ready to solve!'
             self.solve_button.color = color.green
-            # -. need to add the manual coloiur changer here
         else:
             self.status_text.text = 'The scan failed or was cancelled...'
     

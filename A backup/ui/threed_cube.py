@@ -137,9 +137,9 @@ class VisualCube(Entity):
             'D': ('y', -1, -1),
             'F': ('z', -1, 1),
             'B': ('z', 1, -1),
-            'y': ('y', 'all', -1),
-            'x': ('x', 'all', -1),
-            'z': ('z', 'all', -1)
+            'y': ('y', 'all', 1),
+            'x': ('x', 'all', 1),
+            'z': ('z', 'all', 1),
         }
         
         if base not in move_map:
@@ -172,24 +172,3 @@ class VisualCube(Entity):
         
         self.rotation_helper.animate_rotation(rotation_vector, duration = 0.25)
         invoke(self.reset_cubie_parents, delay = 0.5)
-
-
-'''
-app = Ursina()
-
-cube = VisualCube()
-
-# this wont be needed soon
-def input(key):
-    if key == 'u':
-        cube.rotate_side('y', 1) # top layer
-    if key == 'd':
-        cube.rotate_side('y', -1) # bottom layer
-    if key == 'r':
-        cube.rotate_side('x', 1) # right layer
-    if key == 'l':
-        cube.rotate_side('x', -1) # left layer
-
-# this adds a camera you can control with right cliking and scrolling
-EditorCamera()
-'''
