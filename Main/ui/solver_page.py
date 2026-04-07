@@ -8,16 +8,29 @@ class SolverPage(Entity):
     def __init__(self):
         super().__init__(parent=camera.ui)
         self.visual_cube = VisualCube()
-        self.visual_cube.x = 3 # this just moves the cube a bit to the right of the window
-        self.solver = solver.Solver()
+        
+        self.visual_cube.x = 2 # this just moves the cube a bit to the right of the window
+        self.solvers = {
+            'CFOP': solver.CFOP(),
+            'Kociemba': solver.Kociemba()
+        }
+        self.active_solver = self.solvers['CFOP'] # this is the default method of solving the cube
         self.scanner = scanner.CubeScanner()
         
         # this just instantiate the entities for the buttons and its background
         # then pressed, these buttons will also run their specified assigned method
-        self.background = Entity(parent = self, model='quad', scale = (0.4, 0.5), x = -0.6, color = color.black)
-        self.scan_button = Button(parent = self, text = 'Scan Cube', y = 0.1, x = -0.6, scale = (0.3, 0.05), color = color.azure, on_click = self.run_scan)
-        self.solve_button = Button(parent = self, text = 'Compute solution', x = -0.6, scale = (0.3, 0.05), color = color.blue, on_click = self.run_solve)
-        self.status_text = Text(parent = self, text = 'Ready', y = -0.1, x = -0.6, origin = (0,0))
+        self.background = Entity(parent = self, model='quad', scale=(0.35, 0.6), x=-0.70, color=color.black66)
+        
+        self.cfop_btn = Button(parent=self, text='Use CFOP', y=0.25, x=-0.70, scale=(0.3, 0.05), color=color.gray, on_click=self.set_cfop)
+        
+        self.kociemba_btn = Button(parent=self, text='Use Kociemba', y=0.18, x=-0.70, scale=(0.3, 0.05), color=color.gray, on_click=self.set_kociemba)
+        
+        self.scan_button = Button(parent=self, text='Scan Cube', y=0.05, x=-0.70, scale=(0.3, 0.05), color=color.azure, on_click=self.run_scan)
+        
+        self.solve_button = Button(parent=self, text='Compute solution', y=-0.02, x=-0.70, scale=(0.3, 0.05), color=color.blue, on_click=self.run_solve)
+        
+        self.status_text = Text(parent=self, text='Ready', y=-0.15, x=-0.70, origin=(0,0), scale=0.8)
+        
         self.cube_faces = []
         
         self.colours = ['W', 'B', 'R', 'G', 'O', 'Y']
@@ -51,21 +64,18 @@ class SolverPage(Entity):
             logical_move = move
             visual_move = move
             
-            # 3. If holding Shift, make it a Prime move (e.g., R')
-            # from ursina import held_keys must be at the top of your file
+            # to execute prime moves (e.g., R')
             if held_keys['shift']:
                 logical_move = move + '"'
                 visual_move = move + "'"
                 
-            # 4. Tell the 3D cube to perform the move
             self.visual_cube.execute_move(visual_move)
             try:
-                self.solver.apply_move(logical_move)
+                self.active_solver.apply_move(logical_move)
                 print(f'Logic sync: applied {logical_move}')
             except KeyError:
                 print(f'Error: {logical_move} not found in notation map...')
             
-            # 5. Update the status text so the user knows what they pressed
             self.status_text.text = f'Manual Move: {move}'
     
     def run_scan(self):
@@ -81,7 +91,7 @@ class SolverPage(Entity):
             # this feeds the 3d cube the current state of the users scanned cube
             self.visual_cube.recolour_cubies(scanned_data)
             # we now assign the logical cube the state of ghe uers current cube
-            self.solver.cube = scanned_data
+            self.active_solver.cube = scanned_data
             # we allow the user to manually change any sticker colour
             self.manual_editor(scanned_data)
             
@@ -89,6 +99,18 @@ class SolverPage(Entity):
             self.solve_button.color = color.green
         else:
             self.status_text.text = 'The scan failed or was cancelled...'
+    
+    def set_cfop(self):
+        old_state = self.active_solver.get_current_state()
+        self.active_solver = self.solvers['CFOP']
+        self.active_solver.cube = old_state
+        self.status_text.text = 'Active Solver: CFOP'
+    
+    def set_kociemba(self):
+        old_state = self.active_solver.get_current_state()
+        self.active_solver = self.solvers['Kociemba']
+        self.active_solver.cube = old_state
+        self.status_text.text = 'Active Solver: Kociemba'
     
     def manual_editor(self, data):
         for button in self.sticker_buttons:
@@ -108,7 +130,6 @@ class SolverPage(Entity):
         ]
         
         base_x = 0.6
-        base_y = 0.1
         
         for face_index, (off_set_x, off_set_y) in enumerate(off_set):
             for i in range(3):
@@ -134,7 +155,7 @@ class SolverPage(Entity):
             y=-0.3,
             x=base_x + 0.07,
             color=color.green,
-            on_click=self.manual_edits # --> ...
+            on_click=self.manual_edits
         )
     
     def cycle_colour(self, button):
@@ -149,54 +170,40 @@ class SolverPage(Entity):
             new_data[button.face][button.row][button.col] = button.c_code
         
         self.visual_cube.recolour_cubies(new_data)
-        self.solver.cube = new_data
+        self.active_solver.cube = new_data
         
         self.editor_container.enabled = False
         self.status_text.text = 'Cube colours have been updated!'
-    
+
     def run_solve(self):
         if not self.visual_cube.moves_queue:
-            self.status_text.text = 'Computing solution...'
-            full_solution = []
-            
-            step_order = [
-                self.solver.solve_white_cross,
-                self.solver.solve_white_corners,
-                self.solver.solve_f2l_edges,
-                self.solver.solve_oll,
-                self.solver.solve_pll
-            ]
-            
-            for step in step_order:
-                solution = step()
-                if solution and solution[0]:
-                    full_solution.extend(solution[0])
+            full_solution = self.active_solver.solve()
+
+            if full_solution == ['All ready solved']:
+                self.status_text.text = "Cube is already solved!"
+                self.status_text.color = color.green
+                return
+
+            if not full_solution or "Error" in full_solution:
+                self.status_text.text = "Error: Could not find solution"
+                self.status_text.color = color.red
+                return
 
             visual_ready_solution = []
             for move in full_solution:
-                # Clean the move string (Solver uses " for prime, Ursina uses ')
-                clean_move = move.replace('"', "'")
-                base = clean_move[0]
-                is_prime = "'" in clean_move
-
-                if base.islower() and base in self.wide_moves:
-                    # It's a wide move, get the two-move component list
-                    components = self.wide_moves[base]
-                    for comp in components:
-                        # If the original wide move was prime, invert the components
-                        if is_prime:
-                            # If comp already has a ', remove it. If not, add it.
-                            final_comp = comp[0] if "'" in comp else comp + "'"
-                            visual_ready_solution.append(final_comp)
-                        else:
-                            visual_ready_solution.append(comp)
+                clean_move = move.replace("'", '"')
+                
+                if '2' in clean_move:
+                    base = clean_move.replace('2', '')
+                    visual_ready_solution.append(base)
+                    visual_ready_solution.append(base)
                 else:
-                    # It's a normal move (U, R, F, etc.)
                     visual_ready_solution.append(clean_move)
             
-            print(f'Solution found!: {full_solution}')
-            self.status_text.text = f'Solving: {len(full_solution)} moves'
+            print(f'Solution found!: {visual_ready_solution}')
+            self.status_text.text = f'Solving: {len(visual_ready_solution)} moves'
+            self.status_text.color = color.white
             
-            # we now need to feed this information to the 3d cube and the moves queue so its executed in the right order correctly
-            self.visual_cube.moves_queue = full_solution
+            # Feed the perfectly cleaned moves to the 3D cube
+            self.visual_cube.moves_queue = visual_ready_solution
             self.visual_cube.process_queue()

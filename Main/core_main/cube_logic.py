@@ -87,6 +87,9 @@ class Cube:
         cube = [[[sticker]*3 for i in range(3)] for sticker in ['W', 'B', 'R', 'G', 'O', 'Y']]
         return np.array(cube, dtype=object)
     
+    def get_current_state(self):
+        return np.copy(self.cube)
+    
     # ------------------------------- #
     # helper methods for cube movement
     
@@ -202,7 +205,6 @@ class Cube:
             for i in range(3): self.S()
     
     def d(self):
-        # Wide D: D face + E slice (middle slice between U and D)
         self.D()
         positions = [
             [(2,1,0),(2,1,1),(2,1,2)], # Front middle row
@@ -425,6 +427,8 @@ class Cube:
         moves = sequence.split()
         try:
             for move in moves:
+                if "'" in move:
+                    move = move[0] + '"'
                 self.notation_map[move]()
         except KeyError:
             raise KeyError('THIS MOVE DOESNT EXIST SOMEHOW!')
@@ -450,7 +454,11 @@ class Cube:
     # state inspection methods
     
     def is_solved(self):
-        return np.array_equal(self.cube, self.reset())
+        for face in self.cube:
+            center_colour = face[1,1]
+            if not np.all(face ==  center_colour):
+                return False
+        return True
         
     # ------------------------ #
     # scramble method/s - may need more methods later on

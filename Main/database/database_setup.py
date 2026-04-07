@@ -1,6 +1,17 @@
 import sqlite3
 from pprint import pprint as pp
 
+
+'''
+Implemented methods:
+
+Group A:
+ - User/CASE-generated DDL script
+ - 
+ 
+'''
+
+
 def setup_database(db_path='speedcubing.db'):
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()

@@ -9,12 +9,17 @@ from queue import PriorityQueue
 from core_main import cube_logic
 import itertools
 import numpy as np
-from pprint import pprint as pp
 import sqlite3
 from database import algorithm_data
+from abc import ABC, abstractmethod
+import kociemba
 
+class BaseSolver(ABC):
+    @abstractmethod
+    def solve(self):
+        pass
 
-class Solver(cube_logic.Cube):
+class CFOP(cube_logic.Cube, BaseSolver):
     def __init__(self):
         super().__init__()
         self.pll_mappings = algorithm_data.pll_mappings
@@ -40,10 +45,7 @@ class Solver(cube_logic.Cube):
         connection.close()
         return result[0]
 
-
-    # move optimisation to get rid of redundancies e.g. for a move X, X3 = X"
-    # to get the inverse of a sequence, we need to reverse the order and change each move to its inverse move
-    def get_inverse_sequence(self, sequence):
+    def get_inverse_move(self, move):
         inverse_mapping = {
             'R': 'R"',
             'R"': 'R',
@@ -74,78 +76,46 @@ class Solver(cube_logic.Cube):
             'z2': 'z2'
         }
         
-        return [inverse_mapping.get(m, m) for m in reversed(sequence)]
-    
-    def simplify_singles(self, move_list):
-        result = []
-        i = 0
-        while i < len(move_list):
-            base = move_list[i][0]
-            total = 0
-            while i < len(move_list) and move_list[i][0] == base:
-                move = move_list[i]
-                if '2' in move:
-                    total += 2
-                elif '"' in move:
-                    total += 3
-                else:
-                    total += 1
-                i += 1
-            final = total % 4
-            if final == 1:
-                result.append(base)
-            elif final == 2:
-                result.append(base + '2')
-            elif final == 3:
-                result.append(base + '"')
-        return result 
+        return inverse_mapping[move]
     
     def optimise_moves(self, moves):
-        if not moves:
-            return []
+        if not moves: return []
         
-        # this just normalises the moves into a list format
-        moves = [m.strip() for m in moves if m.strip()]
-        # this gets rid of the redundances by repalcing the single moves with the inverses if need be
-        moves = self.simplify_singles(moves)
-        
-        move_sets = [
-            ['R', 'U', 'R"', 'U"'],
-            ['L"', 'U"', 'L', 'U'],
-            ['U', 'R', 'U"', 'R"'],
-            ['U"', 'L"', 'U', 'L']
+        sequence_sets = [
+            [['R', 'U', 'R"', 'U"'], ['U', 'R', 'U"', 'R"']],
+            [['L"', 'U"', 'L', 'U'], ['U"', 'L"', 'U', 'L']],
+            [['U', 'R', 'U"', 'R"'], ['R', 'U', 'R"', 'U"']],
+            [['U"', 'L"', 'U', 'L'], ['L"', 'U"', 'L', 'U']]
         ]
         
-        i = 0
-        optimised = []
-        while i < len(moves):
-            match_found = False
-            for pattern in move_sets:
-                pattern_len = len(pattern)
-                count = 0
-                # this counts the consecutive repeats
-                while i + (count + 1) * pattern_len <= len(moves):
-                    if moves[i + count * pattern_len : (count + 1) * pattern_len] == pattern:
-                        count += 1
-                    else:
-                        break
+        rotations_sets = [
+            [['y', 'y', 'y'], ['y"']],
+            [['U', 'U', 'U'], ['U"']],
+            [['U"', 'U"', 'U"'], ['U']],
+            [['U"', 'U"', 'U"','U"'], []],
+            [['U', 'U', 'U', 'U'], []]
+        ]
+        
+        # need to get rid of X X' pairs 
+        #for i in range(len(moves) - 2):
+        #    if moves[i+1] == self.get_inverse_move(moves[i]):
+        #        moves[i:i+2] = []
                 
-                # if the move set happens more than 3 times, its iverse will be used once, or twice
-                if count >= 4:
-                    if count == 4:
-                        inverse = self.get_inverse_sequence(pattern)
-                        optimised.extend(inverse + inverse)
-                    elif count == 5:
-                        optimised.extend(self.get_inverse_sequence(pattern))
-                    i += count * pattern_len
-                    match_found = True
-                    break
-            
-            if not match_found:
-                optimised.append(moves[i])
-                i += 1
-        return optimised
-    
+                        
+        for sequence in sequence_sets:
+            for i in reversed(range(4,6)):
+                for j in range(len(moves) - len(sequence[0]) + 1):
+                    if moves[j:j+(4*i)] == sequence[0]*i:
+                        moves[j:j+(4*i)] = sequence[1]*(6-i)
+        
+        for rotations in rotations_sets:
+            size = len(rotations)
+            for j in range(len(moves) - size + 1):
+                if moves[j:j+(size) + 1] == rotations[0]:
+                    moves[j:j+(size) + 1] = rotations[1]
+        
+        return moves
+
     # ------------ A* for solving the white cross ------- #
     
     def heuristic(self, state):
@@ -187,6 +157,10 @@ class Solver(cube_logic.Cube):
         moves.reverse()
         return moves
     
+    # describe this lightly with comments
+    # describe most of this in documentation
+    # add white space !!!
+    # clean up the code...
     def solve_white_cross(self, max_depth=8):
         open_set = PriorityQueue()
         closed_set = set()
@@ -290,7 +264,7 @@ class Solver(cube_logic.Cube):
 
     def find_edge(self, colours):
         # colours is a set like {'R', 'G'} for example
-        # these are in the form (face, row, column)
+        # these are in the form (face, row, column) as well
         edges = [
             [(1,1,0), (4,1,2)], [(1,1,2), (2,1,0)], [(2,1,2), (3,1,0)], [(3,1,2), (4,1,0)], # Middle
             [(0,0,1), (4,2,1)], [(0,1,0), (1,2,1)], [(0,1,2), (3,2,1)], [(0,2,1), (2,2,1)], # Bottom
@@ -338,7 +312,7 @@ class Solver(cube_logic.Cube):
                         self.apply_move_sequence('R U R" U"')
                         all_corner_moves.extend(['R', 'U', 'R"', 'U"'])
                     else:
-                        # if its in a different target slot, this will rotate 'y' until it is in the front right slot to them be inserted into its correc position after
+                        # if its in a different target slot, this will rotate 'y' until it is in the front right slot to then be inserted into its correct position after
                         # Rotate 'y' until it is in the front-right slot (0,0,2)
                         while not any(p == (0,0,2) for p in self.find_corner(target_colours)):
                             self.apply_move('y')
@@ -367,7 +341,8 @@ class Solver(cube_logic.Cube):
                 all_corner_moves.extend(['R', 'U', 'R"', 'U"'])
                 timeout += 1
 
-        optimised_moves = self.optimise_moves(all_corner_moves)
+        # optimised_moves = self.optimise_moves(all_corner_moves)
+        optimised_moves = all_corner_moves
         return optimised_moves, self.cube
     
     def solve_f2l_edges(self):
@@ -447,7 +422,8 @@ class Solver(cube_logic.Cube):
                         self.apply_move('y')
                         all_edge_moves.append('y')
         
-        optimised_moves = self.optimise_moves(all_edge_moves)               
+        # optimised_moves = self.optimise_moves(all_edge_moves)               
+        optimised_moves = all_edge_moves
         return optimised_moves, self.cube
     
     
@@ -547,3 +523,89 @@ class Solver(cube_logic.Cube):
                 self.apply_move('U')
             self.rotate_y()
         return ['PLL error...'], self.cube
+    
+    def pruned_full_solution(self, state = None):
+        full_solution = []
+            
+        step_order = [
+            self.solve_white_cross,
+            self.solve_white_corners,
+            self.solve_f2l_edges,
+            self.solve_oll,
+            self.solve_pll
+        ]
+        
+        for step in step_order:
+            solution = step()
+            if solution and solution[0]:
+                full_solution.extend(solution[0])
+        
+        optimised_solution = self.optimise_moves(full_solution)
+        
+        return optimised_solution
+    
+    def solve(self, state = None):
+        if self.is_solved():
+            return ['All ready solved']
+        return self.pruned_full_solution()
+
+class Kociemba(cube_logic.Cube, BaseSolver):
+    def convert_to_string(self, cube_state):
+        face_order = [5, 3, 2, 0, 1, 4]
+        state_str = ''
+        colour_to_letter = {
+            'Y': 'U',
+            'G': 'R',
+            'R': 'F',
+            'W': 'D',
+            'B': 'L',
+            'O': 'B'
+        }
+        
+        for index in face_order:
+            face = cube_state[index]
+            for row in range(3):
+                for col in range(3):
+                    colour = face[row, col]
+                    state_str += colour_to_letter[colour]
+        
+        return state_str
+    
+    '''
+    def solve(self, cube_state):
+        temp_cube = cube_logic.Cube()
+        temp_cube.Cube = cube_state
+        if self.is_solved():
+            return ['All ready solved']
+        
+        state_string = self.convert_to_string(self.cube)
+        try:
+            solution_str = kociemba.solve(state_string)
+            solution = [f'{move}' for move in solution_str.split()]
+            return solution_str.split()
+        except Exception as e:
+            print(f'Kociemba error: {e}')
+            return ['Error']
+    '''
+    
+    def solve(self, state=None):
+        # 1. Clean up the check
+        if self.is_solved():
+            return ['All ready solved']
+        
+        state_string = self.convert_to_string(self.cube)
+        try:
+            solution_str = kociemba.solve(state_string)
+            
+            if not solution_str:
+                return ['All ready solved']
+            
+            # 2. THE CRITICAL FIX: Update the logical cube so it knows it is solved!
+            # This ensures if you switch to CFOP, CFOP sees a solved cube.
+            self.apply_move_sequence(solution_str)
+            
+            solution = solution_str.split()
+            return solution
+        except Exception as e:
+            print(f'Kociemba error: {e}')
+            return ['Error']

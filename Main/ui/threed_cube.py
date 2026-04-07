@@ -147,7 +147,7 @@ class VisualCube(Entity):
         
         axis, layer, direction = move_map[base]
         
-        if '"' in modifier:
+        if "'" in modifier or '"' in modifier: # Check for both types of quotes
             direction *= -1
         
         if '2' in modifier:

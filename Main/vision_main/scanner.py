@@ -31,7 +31,7 @@ class CubeScanner:
         cv.putText(frame, 'Align Cube & Press SPACE', (start_x, start_y - 20), cv.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 0), 2)       
     
     def get_colour(self, h, s):
-        # checks for white first as it tends to have a low saturation value
+        # checks for white first as it tends to have a low colour saturation value
         if s < 70: 
             return 'W'
         # checks the hue ranges

@@ -10,5 +10,5 @@ COLOR_MAP = {
     'B': color.blue
 }
 
-# Define which face index in your Cube class corresponds to which 3D position
-# Bottom=0(W), Left=1(B), Front=2(R), Right=3(G), Back=4(O), Top=5(Y)
+# this just defines which face index in the cube class corresponds to which position
+# bottom = 0 (W), left = 1 (B), front = 2 (R), right = 3 (G), back = 4 (O), top = 5 (Y)
