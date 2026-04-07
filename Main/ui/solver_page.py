@@ -204,6 +204,5 @@ class SolverPage(Entity):
             self.status_text.text = f'Solving: {len(visual_ready_solution)} moves'
             self.status_text.color = color.white
             
-            # Feed the perfectly cleaned moves to the 3D cube
             self.visual_cube.moves_queue = visual_ready_solution
             self.visual_cube.process_queue()
