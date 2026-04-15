@@ -301,6 +301,12 @@ class SolverPage(Entity):
             self.solution.text = formatted_text
             
             print(f'Solution found!: {visual_ready_solution}')
+            self.status_text.text = f'Solving: {len(visual_ready_solution)} moves'
+            self.status_text.color = color.white
+            
+            self.visual_cube.moves_queue = visual_ready_solution
+            self.visual_cube.process_queue()
+
             
             
             self.status_text.text = f'Solved! Use left and right arrows \n to move through.'
