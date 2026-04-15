@@ -151,7 +151,6 @@ class Cube:
         
     def R(self):
         self.rotate_face_cw(3)
-        # the back face is 'upside down' relative to the front when rotating over the top
         positions = [
             [(2,0,2),(2,1,2),(2,2,2)],
             [(5,0,2),(5,1,2),(5,2,2)],
@@ -207,10 +206,10 @@ class Cube:
     def d(self):
         self.D()
         positions = [
-            [(2,1,0),(2,1,1),(2,1,2)], # Front middle row
-            [(3,1,0),(3,1,1),(3,1,2)], # Right middle row
-            [(4,1,0),(4,1,1),(4,1,2)], # Back middle row
-            [(1,1,0),(1,1,1),(1,1,2)]  # Left middle row
+            [(2,1,0),(2,1,1),(2,1,2)],
+            [(3,1,0),(3,1,1),(3,1,2)],
+            [(4,1,0),(4,1,1),(4,1,2)],
+            [(1,1,0),(1,1,1),(1,1,2)]
         ]
         self.cycle_stickers('cw', positions)
     
@@ -219,13 +218,11 @@ class Cube:
             self.d()
     
     def M(self):
-        # Middle slice follows L direction (Downwards)
-        # Slices Front(2), Bottom(0), Back(4), Top(5)
         positions = [
-            [(2,0,1),(2,1,1),(2,2,1)], # Front middle col
-            [(0,0,1),(0,1,1),(0,2,1)], # Bottom middle col
-            [(4,2,1),(4,1,1),(4,0,1)], # Back middle col (inverted)
-            [(5,0,1),(5,1,1),(5,2,1)]  # Top middle col
+            [(2,0,1),(2,1,1),(2,2,1)],
+            [(0,0,1),(0,1,1),(0,2,1)],
+            [(4,2,1),(4,1,1),(4,0,1)],
+            [(5,0,1),(5,1,1),(5,2,1)]
         ]
         self.cycle_stickers('cw', positions)
 
@@ -233,12 +230,11 @@ class Cube:
             for i in range(3): self.M()
     
     def S(self):
-        # Middle slice between F and B (follows F direction)
         positions = [
-            [(5,1,0),(5,1,1),(5,1,2)], # Top middle row
-            [(3,0,1),(3,1,1),(3,2,1)], # Right middle col
-            [(0,1,2),(0,1,1),(0,1,0)], # Bottom middle row (inverted)
-            [(1,2,1),(1,1,1),(1,0,1)]  # Left middle col (inverted)
+            [(5,1,0),(5,1,1),(5,1,2)],
+            [(3,0,1),(3,1,1),(3,2,1)],
+            [(0,1,2),(0,1,1),(0,1,0)],
+            [(1,2,1),(1,1,1),(1,0,1)]
         ]
         self.cycle_stickers('cw', positions)
 
@@ -461,7 +457,7 @@ class Cube:
         return True
         
     # ------------------------ #
-    # scramble method/s - may need more methods later on
+    # scramble method
     
     def scramble(self, scramble=None):
         # instead of using a while loop within the for loop for pruning, I will be only using a for loop but constantly regenerating the potential moves - this heavily reduces the time complexity down to O(L) where L is the length of the scramble

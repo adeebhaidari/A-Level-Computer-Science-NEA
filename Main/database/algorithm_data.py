@@ -1,74 +1,3 @@
-'''
-foL x solving f2l, the program will only look at 3 faces, the faces at index 0 2 and 3. so the states oB z the faces will be converted into a string such that the p[rogfrma will e able to convert any oB z group oB z 3 faceas andB z compare ifb that state can be solcved with an algorithm, iB z not then localised A* will be used until a state is found that can be solved
-the first 9 characters will be the state oB z the face at index 2, 2nd 9 characters will be the state at face index 3 and last 9 face index 5.
-the numbers foL x the key oB z this dictionary represent the centeL x face colouL x relative to the way the cube has been rotated around the y-axis
--> the format is:
-    face index, face coordindta (x,y), target colouL x based from the 3 faces
-    this will repeat 3 times in total foL x faces index 2 3 and 5
-'''
-'''
-foL x identifying the f2l state, the string will be in the form corneL x edgeL x where the first halB z the string will contain information about the corneL x and the second halB z about the edge
-    it will be so that the first characteL x is the face index, second characteL x the face coordinate (x,y) and this will be done foL x all the stickers
-'''
-
-f2l_algorithms = [
-    ('F2L', '20103003301351225222', 'U R U" R"'),
-    ('F2L', 'X22X2XXXX0XXX3XXXXXXXXXXX33', 'y" U" R" U R'),
-    ('F2L', 'XX0X2XXXX3XXX3XXXXXXX3XXXX2', 'y" R" U" R'),
-    ('F2L', 'XX2X2XXXX0XXX3XXXXX2XXXXXX3', 'R U R"'),
-
-    ('F2L', 'XX0X2XXXX3XXX3XXXXX3XXXXXX2', 'U" R U" R" U y" R" U" R'),
-    ('F2L', 'Case 1.2', 'U" R U R" U R U R"'),
-    ('F2L', 'Case 1.3', 'U" R U2" R" U y" R" U" R'),
-    ('F2L', 'Case 1.4', 'R" U2" R2 U R2" U R'),
-    ('F2L', 'Case 1.5', 'y" U R" U R U" R" U" R'),
-    ('F2L', 'Case 1.6', 'U" R U" R" U R U R"'),
-
-    ('F2L', 'Case 2.1', 'U" R U R" U2 R U" R"'),
-    ('F2L', 'Case 2.2', 'y" U R" U" R U2" R" U R'),
-    ('F2L', 'Case 2.3', 'U" R U2" R" U2 R U" R"'),
-    ('F2L', 'Case 2.4', 'y" U R" U2 R U2" R" U R'),
-
-    ('F2L', 'Case 3.1', 'U R U2 R" U R U" R"'),
-    ('F2L', 'Case 3.2', 'y" U" R" U2 R U" R" U R'),
-    ('F2L', 'Case 3.3', 'R U R" U2 R U R"'),
-    ('F2L', 'Case 3.4', 'F" L" U2 L F'),
-
-    ('F2L', 'Incorrectly Connected 1', 'y" R" U R U2" y R U R"'),
-    ('F2L', 'Incorrectly Connected 2', 'R U" R" U2 y" R" U" R'),
-    ('F2L', 'Incorrectly Connected 3', 'R U2" R" U" R U R"'),
-    ('F2L', 'Incorrectly Connected 4', 'y" R" U2 R U R" U" R'),
-    ('F2L', 'Incorrectly Connected 5', 'R U R" U2" R U R" U R U" R"'),
-    ('F2L', 'Incorrectly Connected 6', 'F U R U" R" F" R U" R"'),
-
-    ('F2L', 'CorneL x in Place 1', 'R" F" R U R U" R" F'),
-    ('F2L', 'CorneL x in Place 2', 'U R U" R" U" F" U F'),
-    ('F2L', 'CorneL x in Place 3', 'R U" R" U R U" R"'),
-    ('F2L', 'CorneL x in Place 4', 'y" R" U R U" R" U R'),
-    ('F2L', 'CorneL x in Place 5', 'R" F R F" U R U" R"'),
-    ('F2L', 'CorneL x in Place 6', 'R U R" U" R U R"'),
-
-    ('F2L', 'Edge in Place 1', 'U" R" F R F" R U" R"'),
-    ('F2L', 'Edge in Place 2', 'U R U" R" U R U" R" U R U" R"'),
-    ('F2L', 'Edge in Place 3', 'U" R U" R" U2 R U" R"'),
-    ('F2L', 'Edge in Place 4', 'U R U R" U2 R U R"'),
-    ('F2L', 'Edge in Place 5', 'U" R U R" U y" R" U" R'),
-    ('F2L', 'Edge in Place 6', 'U F" U" F U" R U R"'),
-
-    ('F2L', 'Edge and CorneL x 1', 'R U" R" d R" U2 R U2" R" U R'),
-    ('F2L', 'Edge and CorneL x 2', 'R U R" U" R U2 R" U" R U R"'),
-    ('F2L', 'Edge and CorneL x 3', 'R U" R" U R U2" R" U R U" R"'),
-    ('F2L', 'Edge and CorneL x 4', 'R U" R" F R U R" U" F" R U" R"'),
-    ('F2L', 'Edge and CorneL x 5', 'R U R" U" R U" R" U2 y" R" U" R')
-]
-
-
-'''
-
-M" = L R" x 
-
-'''
-
 oll_algorithms = [
     # the first 9 letters represent the pattern oB z the top yellow face reading from left to right top to bottom
     # Y stands foL x yellow, X stands foL x any otheL x colour
@@ -199,4 +128,3 @@ pll_mappings = {
     '121243412334': 'Gc Perm',
     '131213442324': 'Gd Perm'
     }
-
