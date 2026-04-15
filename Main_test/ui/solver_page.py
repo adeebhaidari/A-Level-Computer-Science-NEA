@@ -14,9 +14,7 @@ class SolverPage(Entity):
             'CFOP': solver.CFOP(),
             'Kociemba': solver.Kociemba()
         }
-        self.active_solver = None
-        self.method_selected = False
-        
+        self.active_solver = self.solvers['CFOP'] # this is the default method of solving the cube
         self.scanner = scanner.CubeScanner()
         
         # this just instantiate the entities for the buttons and its background
@@ -27,25 +25,17 @@ class SolverPage(Entity):
         
         self.kociemba_btn = Button(parent=self, text='Use Kociemba', y=0.18, x=-0.70, scale=(0.3, 0.05), color=color.gray, on_click=self.set_kociemba)
         
-        self.reset_btn = Button(parent=self, text='Reset Cube', y=0.08, x=-0.70, scale=(0.3, 0.05), color=color.gray, on_click=self.reset_cube)
+        self.scan_button = Button(parent=self, text='Scan Cube', y=0.05, x=-0.70, scale=(0.3, 0.05), color=color.azure, on_click=self.run_scan)
         
-        self.scan_button = Button(parent=self, text='Scan Cube', y=0.01, x=-0.70, scale=(0.3, 0.05), color=color.azure, on_click=self.run_scan)
+        self.solve_button = Button(parent=self, text='Compute solution', y=-0.02, x=-0.70, scale=(0.3, 0.05), color=color.blue, on_click=self.run_solve)
         
-        self.solve_button = Button(parent=self, text='Compute solution', y=-0.06, x=-0.70, scale=(0.3, 0.05), color=color.blue, on_click=self.run_solve)
-        
-        self.auto_move_button = Button(parent=self, text='Auto Move', y=-0.13, x=-0.70, scale=(0.3, 0.05), color=color.blue, on_click=self.auto_move)
-        
-        self.status_text = Text(parent=self, text='Choose a method first \n (CFOP / Kociemba)', y=-0.20, x=-0.70, origin=(0,0), scale=0.8, color=color.yellow)
-        
-        self.solution = Text(parent=self, text='Solution: ...', y=-0.3, x = 0, origin=(0,0), scale=1)
-        
-        self.auto_moves = []
-        
-        self.moves_to_execute = []
-        
-        self.executed_moves = []
+        self.status_text = Text(parent=self, text='Ready', y=-0.15, x=-0.70, origin=(0,0), scale=0.8)
         
         self.cube_faces = []
+        
+        self.colours = ['W', 'B', 'R', 'G', 'O', 'Y']
+        self.sticker_buttons = []
+        self.editor_container = Entity(parent=self, enabled=False)
         
         self.key_map = {
             'u': 'U', 
@@ -61,37 +51,20 @@ class SolverPage(Entity):
             'l': ['L', 'M'],
             'f': ['F', 'S'],
         }
-        
-        # ---------- to do with camera stuff --------- (may change)
-        self.colours = ['W', 'B', 'R', 'G', 'O', 'Y']
-        self.sticker_buttons = []
-        self.editor_container = Entity(parent=self, enabled=False)
-
     
     def input(self, key):
-        if self.active_solver is None:
-            return
-        
-        if key == 'right arrow':
-            self.move_forward()
-        elif key == 'left arrow':
-            self.move_backward()
-        
-        if not self.method_selected:
-            if key in self.key_map:
-                self.status_text.text = 'Select a method before scrambling!'
-                self.status_text.color = color.red
-                
+        # 1. Don't allow manual moves if the solver is currently running
         if self.visual_cube.moves_queue:
             return
 
+        # 2. Check if the key pressed is one of our move keys
         if key in self.key_map:
             move = self.key_map[key]
             
             logical_move = move
             visual_move = move
             
-            # to execute prime moves (e.g. R')
+            # to execute prime moves (e.g., R')
             if held_keys['shift']:
                 logical_move = move + '"'
                 visual_move = move + "'"
@@ -105,55 +78,7 @@ class SolverPage(Entity):
             
             self.status_text.text = f'Manual Move: {move}'
     
-    def reset_cube(self):
-        if hasattr(self, 'visual_cube') and self.visual_cube:
-            if hasattr(self.visual_cube, 'cubies'):
-                for c in self.visual_cube.cubies:
-                    destroy(c)
-            destroy(self.visual_cube)
-        
-        
-        for name in self.solvers:
-            self.solvers[name].cube = self.solvers[name].reset()
-        
-        self.visual_cube = VisualCube()
-        self.visual_cube.x = 2
-        self.status_text.text = 'Cube has reset.'
-        self.status_text.color = color.white
-        
-        if hasattr(self, 'solution'):
-            self.solution.text = ''
-            
-        self.moves_to_execute = []
-        self.executed_moves = []
-    
-    def set_cfop(self):
-        #old_state = self.active_solver.get_current_state()
-        self.active_solver = self.solvers['CFOP']
-        self.method_selected = True
-        self.cfop_btn.color = color.azure
-        self.kociemba_btn.color = color.gray
-        # self.active_solver.cube = old_state
-        self.status_text.text = 'Active Solver: CFOP. \n You can now scramble.'
-        self.status_text.color = color.white
-    
-    def set_kociemba(self):
-        #old_state = self.active_solver.get_current_state()
-        self.active_solver = self.solvers['Kociemba']
-        self.method_selected = True
-        self.kociemba_btn.color = color.azure
-        self.cfop_btn.color = color.gray
-        # self.active_solver.cube = old_state
-        self.status_text.text = 'Active Solver: Kociemba. \n You can now scramble.'
-        self.status_text.color = color.white
-
-    # ------------------ methods dealing with camera stuff --------------- (may change)
     def run_scan(self):
-        if not self.method_selected:
-            self.status_text.text = 'Select a method before scanning!'
-            self.status_text.color = color.red
-            return
-        
         self.status_text.text = 'Scanning... Check the pop up window'
         scanned_data = self.scanner.run()
         
@@ -174,6 +99,18 @@ class SolverPage(Entity):
             self.solve_button.color = color.green
         else:
             self.status_text.text = 'The scan failed or was cancelled...'
+    
+    def set_cfop(self):
+        old_state = self.active_solver.get_current_state()
+        self.active_solver = self.solvers['CFOP']
+        self.active_solver.cube = old_state
+        self.status_text.text = 'Active Solver: CFOP'
+    
+    def set_kociemba(self):
+        old_state = self.active_solver.get_current_state()
+        self.active_solver = self.solvers['Kociemba']
+        self.active_solver.cube = old_state
+        self.status_text.text = 'Active Solver: Kociemba'
     
     def manual_editor(self, data):
         for button in self.sticker_buttons:
@@ -237,36 +174,9 @@ class SolverPage(Entity):
         
         self.editor_container.enabled = False
         self.status_text.text = 'Cube colours have been updated!'
-        
-    # ---------------------------------------------------------------------------------- 
-
-    def move_forward(self):
-        if self.moves_to_execute and not self.visual_cube.is_animating:
-            move = self.moves_to_execute.pop()
-            self.executed_moves.append(move)
-            self.visual_cube.execute_move(move)
-            self.status_text.text = f'Executed: {move} \n Moves left: {len(self.moves_to_execute)}'
-    
-    def move_backward(self):
-        if self.executed_moves and not self.visual_cube.is_animating:
-            move = self.executed_moves.pop()
-            self.moves_to_execute.append(move)
-            inverse_move = move[0] if '"' in move else move + '"'
-            self.visual_cube.execute_move(inverse_move)
-            self.status_text.text = f'Undid: {move} \n Moves left: {len(self.moves_to_execute)}'
-    
-    def auto_move(self):
-        if not self.visual_cube.is_animating:
-            self.visual_cube.moves_queue = self.auto_moves
-            self.visual_cube.process_queue()
 
     def run_solve(self):
         if not self.visual_cube.moves_queue:
-            if self.active_solver is None:
-                self.status_text.text = 'Please select a method first.'
-                self.status_text.color = color.red
-                return
-            
             full_solution = self.active_solver.solve()
 
             if full_solution == ['All ready solved']:
@@ -274,8 +184,8 @@ class SolverPage(Entity):
                 self.status_text.color = color.green
                 return
 
-            if not full_solution or ['Error'] in full_solution:
-                self.status_text.text = 'Error: Could not find solution'
+            if not full_solution or "Error" in full_solution:
+                self.status_text.text = "Error: Could not find solution"
                 self.status_text.color = color.red
                 return
 
@@ -290,26 +200,9 @@ class SolverPage(Entity):
                 else:
                     visual_ready_solution.append(clean_move)
             
-            ###
-            self.auto_moves = visual_ready_solution
-            solution_lines = []
-            
-            for i in range(0, len(full_solution), 15):
-                part = full_solution[i:i + 15]
-                solution_lines.append(' '.join(part))
-            
-            formatted_text = 'Solution:\n' + '\n'.join(solution_lines)
-            self.solution.text = formatted_text
-            ###
-            
             print(f'Solution found!: {visual_ready_solution}')
             self.status_text.text = f'Solving: {len(visual_ready_solution)} moves'
             self.status_text.color = color.white
             
             self.visual_cube.moves_queue = visual_ready_solution
-            #self.visual_cube.process_queue()
-            
-            self.status_text.text = f'Solved! Use left and right arrows \n to move through.'
-            self.status_text.color = color.green
-            self.moves_to_execute = visual_ready_solution[::-1]
-            self.executed_moves.clear()
+            self.visual_cube.process_queue()

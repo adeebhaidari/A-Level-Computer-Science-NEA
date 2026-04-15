@@ -14,13 +14,12 @@ from database import algorithm_data
 from abc import ABC, abstractmethod
 import kociemba
 
-
-class BaseSolver(ABC, cube_logic.Cube):
+class BaseSolver(ABC):
     @abstractmethod
     def solve(self):
-        pass   
+        pass
 
-class CFOP(BaseSolver):
+class CFOP(cube_logic.Cube, BaseSolver):
     def __init__(self):
         super().__init__()
         self.pll_mappings = algorithm_data.pll_mappings
@@ -115,43 +114,7 @@ class CFOP(BaseSolver):
                 if moves[j:j+(size) + 1] == rotations[0]:
                     moves[j:j+(size) + 1] = rotations[1]
         
-        moves = [m.replace('"', "'") for m in moves]
-        
-        optimized = True
-        while optimized:
-            optimized = False
-            new_moves = []
-            i = 0
-            while i < len(moves):
-                current_move = moves[i]
-                
-                if i + 1 < len(moves) and moves[i+1][0] == current_move[0]:
-                    face = current_move[0]
-                    
-                    def get_val(m):
-                        if len(m) == 1: return 1
-                        if '2' in m: return 2
-                        if "'" in m: return 3
-                        return 0
-
-                    total_rotation = (get_val(current_move) + get_val(moves[i+1])) % 4
-                    
-                    combined = None
-                    if total_rotation == 1: combined = face
-                    elif total_rotation == 2: combined = face + "2"
-                    elif total_rotation == 3: combined = face + "'"
-                    
-                    if combined:
-                        new_moves.append(combined)
-                    
-                    i += 2
-                    optimized = True
-                else:
-                    new_moves.append(current_move)
-                    i += 1
-            moves = new_moves
-        
-        return [m.replace("'", '"') for m in moves]
+        return moves
 
     # ------------ A* for solving the white cross ------- #
     
@@ -198,56 +161,71 @@ class CFOP(BaseSolver):
     # describe most of this in documentation
     # add white space !!!
     # clean up the code...
-    def solve_white_cross(self, max_depth=12):
+    def solve_white_cross(self, max_depth=8):
         open_set = PriorityQueue()
         closed_set = set()
         came_from = {}
-        
         g_score = {}
         f_score = {}
         counter = itertools.count()
-        
         start_state = self.cube_to_state(self.cube)
         g_score[start_state] = 0
         f_score[start_state] = self.heuristic(start_state)
-        
         open_set.put((f_score[start_state], next(counter), start_state))
-        
-        ALL_MOVES = ['R', 'R"', 'R2', 'L', 'L"', 'L2', 'U', 'U"', 'U2', 'D', 'D"', 'D2', 'F', 'F"', 'F2', 'B', 'B"', 'B2']
-        
+        ALL_MOVES = list(self.notation_map.keys())
+        ALL_MOVES.remove('M')
+        ALL_MOVES.remove('M"')
+        ALL_MOVES.remove('M2')
+        ALL_MOVES.remove('M2"')
+        ALL_MOVES.remove('S')
+        ALL_MOVES.remove('x')
+        ALL_MOVES.remove('x"')
+        ALL_MOVES.remove('x2')
+        ALL_MOVES.remove('x2"')
+        ALL_MOVES.remove('y')
+        ALL_MOVES.remove('y"')
+        ALL_MOVES.remove('y2')
+        ALL_MOVES.remove('y2"')
+        ALL_MOVES.remove('z')
+        ALL_MOVES.remove('z"')
+        ALL_MOVES.remove('z2')
+        ALL_MOVES.remove('z2"')
+        ALL_MOVES.remove('r')
+        ALL_MOVES.remove('r"')
+        ALL_MOVES.remove('r2')
+        ALL_MOVES.remove('r2"')
+        ALL_MOVES.remove('l')
+        ALL_MOVES.remove('l"')
+        ALL_MOVES.remove('l2')
+        ALL_MOVES.remove('l2"')
+        ALL_MOVES.remove('d')
+        ALL_MOVES.remove('d"')
+        ALL_MOVES.remove('d2')
+        ALL_MOVES.remove('d2"')
+        ALL_MOVES.remove('f')
+        ALL_MOVES.remove('f"')
+        ALL_MOVES.remove('f2')
+        ALL_MOVES.remove('f2"')
         while not open_set.empty():
             f, c, current_state = open_set.get()
-            
-            last_move = came_from[current_state][1] if current_state in came_from else None
-            
             if self.is_white_cross_solved(current_state):
                 self.cube = self.state_to_cube(current_state)
                 return self.reconstruct_path(came_from, current_state), self.state_to_cube(current_state)
-            
             if current_state in closed_set:
                 continue
-            
             closed_set.add(current_state)
-            
             if g_score[current_state] >= max_depth: 
                 continue
-            
             last_move = None
-            
             for move in ALL_MOVES:
-                if last_move == self.get_inverse_move(move):
+                if last_move is not None and move == last_move:
                     continue
-                
-                #if last_move is not None and move == last_move:
-                #    continue
-                
                 new_cube = self.state_to_cube(current_state).copy()
                 self.cube = new_cube
                 self.apply_move(move)
                 next_state = self.cube_to_state(self.cube)
                 if next_state in closed_set:
                     continue
-                
                 temp_g_score = g_score[current_state] + 1
                 if temp_g_score < g_score.get(next_state, float('inf')):
                     came_from[next_state] = (current_state, move)
@@ -418,6 +396,7 @@ class CFOP(BaseSolver):
                         
                     self.apply_move_sequence(seq)
                     all_edge_moves.extend(seq.split())
+                    
                     break
 
             # if no non yellow pieces are on the top an F2L piece is either stuck or flipped in the middle layer
@@ -471,16 +450,9 @@ class CFOP(BaseSolver):
         return mapping
     
     def solve_oll(self):
-        if np.all(self.cube[5] == 'Y'):
-            return [], self.cube
-        
         connection = sqlite3.connect('speedcubing.db')
         cursor = connection.cursor()
-        cursor.execute('''
-            SELECT Name FROM Algorithms 
-            WHERE CategoryID == 1
-        ''')
-        
+        cursor.execute('SELECT Name FROM Algorithms WHERE CategoryID == 2')
         names = cursor.fetchall()
         states = [item[0] for item in names]
         connection.close()
@@ -508,7 +480,9 @@ class CFOP(BaseSolver):
                 
                 self.apply_move('U')
             self.rotate_y()
-
+            
+        if np.all(self.cube[5] == 'Y'):
+            return [], self.cube
         return ['OLL error...'], self.cube
     
     # ------------- Solving PLL ---------------- #
@@ -526,21 +500,6 @@ class CFOP(BaseSolver):
         return state
     
     def solve_pll(self):
-        is_pll_solved = True
-        for face in range(1, 5):
-            if not np.all(self.cube[face][0, :] == self.cube[face][1,1]):
-                is_pll_solved = False
-                break
-            last_moves = []
-            for u in range(3):
-                if self.cube[1][0,1] == self.cube[1][1,1] and self.cube[3][0,1] == self.cube[3][1,1]:
-                    return last_moves, self.cube
-                self.apply_move('U')
-                last_moves.append('U')
-            
-        if is_pll_solved:
-            return [], self.cube
-        
         for y in range(4):
             for u in range(4):
                 state = self.read_pll_state()
@@ -578,10 +537,6 @@ class CFOP(BaseSolver):
         
         for step in step_order:
             solution = step()
-            if not solution or (solution and 'error' in solution[0]):
-                print(f'Solver aborted at {step.__name__}')
-                return ['Error']
-            
             if solution and solution[0]:
                 full_solution.extend(solution[0])
         
@@ -594,7 +549,7 @@ class CFOP(BaseSolver):
             return ['All ready solved']
         return self.pruned_full_solution()
 
-class Kociemba(BaseSolver):
+class Kociemba(cube_logic.Cube, BaseSolver):
     def convert_to_string(self, cube_state):
         face_order = [5, 3, 2, 0, 1, 4]
         state_str = ''
@@ -616,11 +571,27 @@ class Kociemba(BaseSolver):
         
         return state_str
     
-    def solve(self, state=None):
+    '''
+    def solve(self, cube_state):
+        temp_cube = cube_logic.Cube()
+        temp_cube.Cube = cube_state
         if self.is_solved():
             return ['All ready solved']
         
-        self.reorient('R', 'W')
+        state_string = self.convert_to_string(self.cube)
+        try:
+            solution_str = kociemba.solve(state_string)
+            solution = [f'{move}' for move in solution_str.split()]
+            return solution_str.split()
+        except Exception as e:
+            print(f'Kociemba error: {e}')
+            return ['Error']
+    '''
+    
+    def solve(self, state=None):
+        # 1. Clean up the check
+        if self.is_solved():
+            return ['All ready solved']
         
         state_string = self.convert_to_string(self.cube)
         try:
@@ -628,6 +599,9 @@ class Kociemba(BaseSolver):
             
             if not solution_str:
                 return ['All ready solved']
+            
+            # 2. THE CRITICAL FIX: Update the logical cube so it knows it is solved!
+            # This ensures if you switch to CFOP, CFOP sees a solved cube.
             self.apply_move_sequence(solution_str)
             
             solution = solution_str.split()

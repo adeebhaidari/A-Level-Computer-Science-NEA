@@ -1,4 +1,4 @@
-from ursina import Ursina, time, Entity, Vec3, color, scene, invoke, EditorCamera
+from ursina import Ursina, Entity, Vec3, color, scene, invoke, EditorCamera
 
 class VisualCube(Entity):
     def __init__(self, **kwargs):
@@ -7,12 +7,7 @@ class VisualCube(Entity):
         self.cubies = [] # this will store each individual small 1x1 cube that makes up the cube - except the cube that is in the middle of the 3d shape as there isnt a piece there
         self.rotation_helper = Entity()
         self.create_cube()
-        
         self.is_animating = False
-        self.auto_play = False
-        self.auto_play_speed = 0.2
-        self.time_since_last_move = 0
-        
         self.moves_queue = [] # this will store the list of moves to execite that have been computed by the solver class
         self.COLOUR_LOOKUP = {
             'W': color.white,
@@ -28,7 +23,7 @@ class VisualCube(Entity):
         # this parent class is an empty entity that holds the stickers of the rubiks cube together
         cubie = Entity(position=grid_pos * 1.05)
         cubie.stickers = []
-        # this method handles the process or creating the stickern entities such that their parent class is the cubie class
+        # this method handles the process or creating the stickern entities such that there parent class is the cubie class
         def make_sticker(axis, position, rotation, name, default_colour):
             s = Entity(parent=cubie, model='quad', color=default_colour)
             setattr(s, axis, position)
@@ -65,7 +60,6 @@ class VisualCube(Entity):
                     cubie = self.create_cubie(Vec3(x,y,z)) # we multiple the positions by a small scale to add a small gao between each cubie
                     self.cubies.append(cubie)
 
-    # ---------------- method dealing with camera stuff (again) (may change) ------------------- 
     def recolour_cubies(self, scanner_data):
         for cubie in self.cubies:
             x, y, z = int(round(cubie.x)),int(round(cubie.y)), int(round(cubie.z))
@@ -88,7 +82,6 @@ class VisualCube(Entity):
                 
                 if cubie_code in self.COLOUR_LOOKUP: # this assigns the correct colour to the sticker
                     sticker.color = self.COLOUR_LOOKUP[cubie_code]
-    # --------------------------------------------------------------------------------------------------
 
     def rotate_side(self, side_axis, layer_pos, direction = 1):
         if self.is_animating: # if the cube is already animating, dont do anything
@@ -123,14 +116,13 @@ class VisualCube(Entity):
             cubie.parent = scene # this makes the cubies new parent entity the current part of the environment they are in, the 'scene'
             cubie.position, cubie.rotation = world_position, world_rotation
         self.is_animating = False
-        # self.process_queue() # this should then trigger the next move - this is just for testing to see fi the program can execute each move one by one on its own, the later i will allow the user to go back and forth with how the cube moves when executing the moves for the computed solution
+        self.process_queue() # this should then trigger the next move - this is just for testing to see fi the program can execute each move one by one on its own, the later i will allow the user to go back and forth with how the cube moves when executing the moves for the computed solution
     
-    def process_queue(self):
+    def process_queue(self): # this will prepare the next move to be executed at the right moment by checking if the queue is not empty to prevent an underflow and by also chekcing if the cube isnt being animated as moving
         if self.moves_queue and not self.is_animating:
-            for move in self.moves_queue:
-                temp_move = self.moves_queue.pop(0)
-                self.execute_move(temp_move)
-            
+            move = self.moves_queue.pop(0)
+            self.execute_move(move)
+    
     def execute_move(self, move):
         if not move or self.is_animating:
             return
@@ -155,7 +147,7 @@ class VisualCube(Entity):
         
         axis, layer, direction = move_map[base]
         
-        if "'" in modifier or '"' in modifier:
+        if "'" in modifier or '"' in modifier: # Check for both types of quotes
             direction *= -1
         
         if '2' in modifier:
