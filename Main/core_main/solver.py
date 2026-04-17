@@ -96,12 +96,6 @@ class CFOP(BaseSolver):
             [['U"', 'U"', 'U"','U"'], []],
             [['U', 'U', 'U', 'U'], []]
         ]
-        
-        # need to get rid of X X' pairs 
-        #for i in range(len(moves) - 2):
-        #    if moves[i+1] == self.get_inverse_move(moves[i]):
-        #        moves[i:i+2] = []
-                
                         
         for sequence in sequence_sets:
             for i in reversed(range(4,6)):
@@ -117,9 +111,9 @@ class CFOP(BaseSolver):
         
         moves = [m.replace('"', "'") for m in moves]
         
-        optimized = True
-        while optimized:
-            optimized = False
+        optimised = True
+        while optimised:
+            optimised = False
             new_moves = []
             i = 0
             while i < len(moves):
@@ -145,7 +139,7 @@ class CFOP(BaseSolver):
                         new_moves.append(combined)
                     
                     i += 2
-                    optimized = True
+                    optimised = True
                 else:
                     new_moves.append(current_move)
                     i += 1

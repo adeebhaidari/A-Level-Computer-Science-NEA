@@ -1,41 +1,45 @@
 from ursina import Entity, Button, Text, destroy, camera, color, Ursina, EditorCamera, held_keys
 from ui.threed_cube import VisualCube
-from vision_main import scanner
+# from vision_main import scanner
 from core_main import solver
 import numpy as np
+import random
 
 class SolverPage(Entity):
     def __init__(self):
         super().__init__(parent=camera.ui)
         self.visual_cube = VisualCube()
         
-        self.visual_cube.x = 2 # this just moves the cube a bit to the right of the window
+        self.visual_cube.x = 2
         self.solvers = {
             'CFOP': solver.CFOP(),
             'Kociemba': solver.Kociemba()
         }
         self.active_solver = None
         self.method_selected = False
+        self.move_optimiser = solver.CFOP()
         
-        self.scanner = scanner.CubeScanner()
+        #---> NOT NEEDED NOW self.scanner = scanner.CubeScanner()
         
         # this just instantiate the entities for the buttons and its background
         # then pressed, these buttons will also run their specified assigned method
-        self.background = Entity(parent = self, model='quad', scale=(0.35, 0.6), x=-0.70, color=color.black66)
+        self.background = Entity(parent = self, model='quad', scale=(0.4, 0.75), x=-0.70, color=color.black66)
         
-        self.cfop_btn = Button(parent=self, text='Use CFOP', y=0.25, x=-0.70, scale=(0.3, 0.05), color=color.gray, on_click=self.set_cfop)
+        self.cfop_btn = Button(parent=self, text='Use CFOP', y=0.3, x=-0.70, scale=(0.3, 0.05), color=color.gray, on_click=self.set_cfop)
         
-        self.kociemba_btn = Button(parent=self, text='Use Kociemba', y=0.18, x=-0.70, scale=(0.3, 0.05), color=color.gray, on_click=self.set_kociemba)
+        self.kociemba_btn = Button(parent=self, text='Use Kociemba', y=0.22, x=-0.70, scale=(0.3, 0.05), color=color.gray, on_click=self.set_kociemba)
         
-        self.reset_btn = Button(parent=self, text='Reset Cube', y=0.08, x=-0.70, scale=(0.3, 0.05), color=color.gray, on_click=self.reset_cube)
+        self.reset_btn = Button(parent=self, text='Reset Cube', y=0.14, x=-0.70, scale=(0.3, 0.05), color=color.gray, on_click=self.reset_cube)
         
-        self.scan_button = Button(parent=self, text='Scan Cube', y=0.01, x=-0.70, scale=(0.3, 0.05), color=color.azure, on_click=self.run_scan)
+        self.scramble_generator = Button(parent=self, text='Generate scramble', y=0.06, x=-0.70, scale=(0.3, 0.05), color=color.blue, on_click=self.generate_scramble)
         
-        self.solve_button = Button(parent=self, text='Compute solution', y=-0.06, x=-0.70, scale=(0.3, 0.05), color=color.blue, on_click=self.run_solve)
+        self.solve_button = Button(parent=self, text='Compute solution', y=-0.02, x=-0.70, scale=(0.3, 0.05), color=color.blue, on_click=self.run_solve)
         
-        self.auto_move_button = Button(parent=self, text='Auto Move', y=-0.13, x=-0.70, scale=(0.3, 0.05), color=color.blue, on_click=self.auto_move)
+        self.auto_move_button = Button(parent=self, text='Auto Move', y=-0.1, x=-0.70, scale=(0.3, 0.05), color=color.blue, on_click=self.auto_move)
         
-        self.status_text = Text(parent=self, text='Choose a method first \n (CFOP / Kociemba)', y=-0.20, x=-0.70, origin=(0,0), scale=0.8, color=color.yellow)
+        # ---> NOT NEEDED NOW self.scan_button = Button(parent=self, text='Scan Cube', y=0.01, x=-0.70, scale=(0.3, 0.05), color=color.azure, on_click=self.run_scan)
+        
+        self.status_text = Text(parent=self, text='Choose a method first \n (CFOP / Kociemba)', y=-0.25, x=-0.70, origin=(0,0), scale=0.8, color=color.yellow)
         
         self.solution = Text(parent=self, text='Solution: ...', y=-0.3, x = 0, origin=(0,0), scale=1)
         
@@ -56,17 +60,13 @@ class SolverPage(Entity):
             'b': 'B'
         }
         
-        self.wide_moves = {
-            'r': ['R', 'M"'],
-            'l': ['L', 'M'],
-            'f': ['F', 'S'],
-        }
         
-        # ---------- to do with camera stuff --------- (may change)
+        '''
+        # ---------- to do with camera stuff --------- NOT NEEDED NOW
         self.colours = ['W', 'B', 'R', 'G', 'O', 'Y']
         self.sticker_buttons = []
         self.editor_container = Entity(parent=self, enabled=False)
-
+        '''
     
     def input(self, key):
         if self.active_solver is None:
@@ -128,25 +128,22 @@ class SolverPage(Entity):
         self.executed_moves = []
     
     def set_cfop(self):
-        #old_state = self.active_solver.get_current_state()
         self.active_solver = self.solvers['CFOP']
         self.method_selected = True
         self.cfop_btn.color = color.azure
         self.kociemba_btn.color = color.gray
-        # self.active_solver.cube = old_state
         self.status_text.text = 'Active Solver: CFOP. \n You can now scramble.'
         self.status_text.color = color.white
     
     def set_kociemba(self):
-        #old_state = self.active_solver.get_current_state()
         self.active_solver = self.solvers['Kociemba']
         self.method_selected = True
         self.kociemba_btn.color = color.azure
         self.cfop_btn.color = color.gray
-        # self.active_solver.cube = old_state
         self.status_text.text = 'Active Solver: Kociemba. \n You can now scramble.'
         self.status_text.color = color.white
 
+    '''
     # ------------------ methods dealing with camera stuff --------------- (may change)
     def run_scan(self):
         if not self.method_selected:
@@ -239,6 +236,7 @@ class SolverPage(Entity):
         self.status_text.text = 'Cube colours have been updated!'
         
     # ---------------------------------------------------------------------------------- 
+    '''
 
     def move_forward(self):
         if self.moves_to_execute and not self.visual_cube.is_animating:
@@ -259,6 +257,26 @@ class SolverPage(Entity):
         if not self.visual_cube.is_animating:
             self.visual_cube.moves_queue = self.auto_moves
             self.visual_cube.process_queue()
+
+    def generate_scramble(self, scramble=None):
+        # instead of using a while loop within the for loop for pruning, I will be only using a for loop but constantly regenerating the potential moves - this heavily reduces the time complexity down to O(L) where L is the length of the scramble
+        # fix the logic error so X or X" or X2 arent next to each other in the scramble - do later
+        if scramble == None:
+            moves = ['R', 'R"', 'R2', 'L', 'L"', 'L2', 'D', 'D"', 'D2', 'U', 'U"', 'U2', 'F', 'F"', 'F2', 'B', 'B"', 'B2']
+            scramble = [random.choice(moves) for i in range (40)]
+            scramble_optimiser = self.move_optimiser.optimise_moves(scramble)
+            
+            solution_lines = []
+            
+            for i in range(0, len(scramble_optimiser), 7):
+                part = scramble_optimiser[i:i + 7]
+                solution_lines.append(' '.join(part))
+            
+            formatted_text = 'Scramble:\n' + '\n'.join(solution_lines)
+        
+            self.status_text.text = formatted_text
+            self.status_text.color = color.green
+            return scramble_optimiser
 
     def run_solve(self):
         if not self.visual_cube.moves_queue:

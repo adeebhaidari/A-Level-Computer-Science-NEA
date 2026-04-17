@@ -455,22 +455,4 @@ class Cube:
             if not np.all(face ==  center_colour):
                 return False
         return True
-        
-    # ------------------------ #
-    # scramble method
     
-    def scramble(self, scramble=None):
-        # instead of using a while loop within the for loop for pruning, I will be only using a for loop but constantly regenerating the potential moves - this heavily reduces the time complexity down to O(L) where L is the length of the scramble
-        # fix the logic error so X or X" or X2 arent next to each other in the scramble - do later
-        if scramble == None:
-            moves = ['R', 'R"', 'R2', 'L', 'L"', 'L2', 'D', 'D"', 'D2', 'U', 'U"', 'U2', 'F', 'F"', 'F2', 'B', 'B"', 'B2']
-            scramble = []
-            prev_move = None
-            for i in range(25):
-                potential_moves = [move for move in moves if prev_move is None or move[0] != prev_move[0]]
-                move = random.choice(potential_moves)
-                scramble.append(move)
-                prev_move = move
-        complete_scramble = ' '.join(scramble)
-        self.apply_move_sequence(complete_scramble)
-        return complete_scramble
