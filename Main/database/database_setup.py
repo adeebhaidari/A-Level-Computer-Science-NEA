@@ -42,6 +42,16 @@ def setup_database(db_path='speedcubing.db'):
    # );''')
 
     cursor.execute('''
+    CREATE TABLE IF NOT EXISTS ExportedSolves (
+        ExportID INTEGER PRIMARY KEY AUTOINCREMENT,
+        Scramble TEXT NOT NULL,
+        Solution TEXT NOT NULL,
+        SolutionLength INTEGER NOT NULL,
+        PreferredMethod TEXT,
+        Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );''')
+
+    cursor.execute('''
     CREATE TABLE IF NOT EXISTS Methods (
         MethodID INTEGER PRIMARY KEY AUTOINCREMENT,
         Name TEXT NOT NULL

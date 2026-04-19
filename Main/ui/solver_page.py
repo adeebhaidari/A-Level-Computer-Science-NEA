@@ -4,6 +4,8 @@ from ui.threed_cube import VisualCube
 from core_main import solver
 import numpy as np
 import random
+import sqlite3
+import database.data_manager as data_manager
 
 class SolverPage(Entity):
     def __init__(self):
@@ -37,15 +39,25 @@ class SolverPage(Entity):
         
         self.auto_move_button = Button(parent=self, text='Auto Move', y=-0.1, x=-0.70, scale=(0.3, 0.05), color=color.blue, on_click=self.auto_move)
         
+        self.export_button = Button(parent=self, text='Download History', y=-0.18, x=-0.70, scale=(0.3, 0.05), color=color.orange, on_click=self.handle_export)
+
+        self.preference_text = Text(parent=self, text='Do prefer this solution?', y=-0.35, x=-0.70, origin=(0,0), scale=0.7, enabled=False)
+        
+        self.yes_button = Button(parent=self, text='Yes', y=-0.4, x=-0.8, scale=(0.1, 0.04), color=color.green, enabled=False, on_click=lambda: self.record_preference('Yes'))
+        
+        self.no_button = Button(parent=self, text='No', y=-0.4, x=-0.6, scale=(0.1, 0.04), color=color.red, enabled=False, on_click=lambda: self.record_preference('No'))
+        
         # ---> NOT NEEDED NOW self.scan_button = Button(parent=self, text='Scan Cube', y=0.01, x=-0.70, scale=(0.3, 0.05), color=color.azure, on_click=self.run_scan)
         
-        self.status_text = Text(parent=self, text='Choose a method first \n (CFOP / Kociemba)', y=-0.25, x=-0.70, origin=(0,0), scale=0.8, color=color.yellow)
+        self.status_text = Text(parent=self, text='Choose a method first \n (CFOP / Kociemba)', y=-0.3, x=-0.70, origin=(0,0), scale=0.8, color=color.yellow)
         
-        self.solution = Text(parent=self, text='Solution: ...', y=-0.3, x = 0, origin=(0,0), scale=1)
+        self.solution = Text(parent=self, text='Solution: ...', y=-0.35, x = 0, origin=(0,0), scale=1)
         
-        self.auto_moves = []
+        self.auto_move_scramble = []
+        self.auto_move_scramble_full = len(self.auto_move_scramble) > 0
         
         self.moves_to_execute = []
+        self.computed_solution_full = len(self.moves_to_execute) > 0
         
         self.executed_moves = []
         
@@ -106,6 +118,11 @@ class SolverPage(Entity):
             self.status_text.text = f'Manual Move: {move}'
     
     def reset_cube(self):
+        if hasattr(self, 'visual_cube') and (self.visual_cube.is_animating or len(self.visual_cube.moves_queue) > 0):
+            self.status_text.text = 'Cannot reset the cube \n while it is moving'
+            self.status_text.color = color.red
+            return
+            
         if hasattr(self, 'visual_cube') and self.visual_cube:
             if hasattr(self.visual_cube, 'cubies'):
                 for c in self.visual_cube.cubies:
@@ -240,7 +257,7 @@ class SolverPage(Entity):
 
     def move_forward(self):
         if self.moves_to_execute and not self.visual_cube.is_animating:
-            move = self.moves_to_execute.pop()
+            move = self.moves_to_execute.pop(0)
             self.executed_moves.append(move)
             self.visual_cube.execute_move(move)
             self.status_text.text = f'Executed: {move} \n Moves left: {len(self.moves_to_execute)}'
@@ -248,15 +265,51 @@ class SolverPage(Entity):
     def move_backward(self):
         if self.executed_moves and not self.visual_cube.is_animating:
             move = self.executed_moves.pop()
-            self.moves_to_execute.append(move)
+            self.moves_to_execute.insert(0, move)
             inverse_move = move[0] if '"' in move else move + '"'
             self.visual_cube.execute_move(inverse_move)
             self.status_text.text = f'Undid: {move} \n Moves left: {len(self.moves_to_execute)}'
     
     def auto_move(self):
+        if self.active_solver is None:
+            self.status_text.text = 'Select a method before scrambling!'
+            self.status_text.color = color.red
+            return
+        
+        if not self.auto_move_scramble and not self.computed_solution_full:
+            self.status_text.text = 'Please generate a scramble first!'
+            self.status_text.color = color.red
+            return
+        
         if not self.visual_cube.is_animating:
-            self.visual_cube.moves_queue = self.auto_moves
-            self.visual_cube.process_queue()
+            if self.auto_move_scramble_full:
+                moves = self.auto_move_scramble
+                self.auto_move_scramble_full = False
+                
+                #self.visual_cube.moves_queue = self.auto_move_scramble.copy()
+                #self.status_text.text = 'Applying scramble...'
+                #self.status_text.color = color.white
+                #for move in self.auto_move_scramble:
+                #    self.active_solver.apply_move(move)
+            else:
+                moves = self.moves_to_execute
+                
+                #self.visual_cube.moves_queue = self.moves_to_execute.copy()
+                #self.status_text.text = 'Executing solution...'
+                #self.status_text.color = color.white
+                #for move in self.moves_to_execute:
+                #    if move == 'PLL error':
+                #        continue
+                #    self.active_solver.apply_move(move)
+            self.visual_cube.moves_queue = moves.copy()
+            for move in moves:
+                if move != 'PLL error':
+                    self.active_solver.apply_move(move)
+            
+            self.moves_to_execute.clear()
+            self.auto_move_scramble.clear()
+            self.status_text.text = 'Executing moves...'
+            
 
     def generate_scramble(self, scramble=None):
         # instead of using a while loop within the for loop for pruning, I will be only using a for loop but constantly regenerating the potential moves - this heavily reduces the time complexity down to O(L) where L is the length of the scramble
@@ -265,6 +318,7 @@ class SolverPage(Entity):
             moves = ['R', 'R"', 'R2', 'L', 'L"', 'L2', 'D', 'D"', 'D2', 'U', 'U"', 'U2', 'F', 'F"', 'F2', 'B', 'B"', 'B2']
             scramble = [random.choice(moves) for i in range (40)]
             scramble_optimiser = self.move_optimiser.optimise_moves(scramble)
+            self.auto_move_scramble = scramble_optimiser
             
             solution_lines = []
             
@@ -276,7 +330,11 @@ class SolverPage(Entity):
         
             self.status_text.text = formatted_text
             self.status_text.color = color.green
-            return scramble_optimiser
+            self.auto_move_scramble_full = True
+            self.computed_solution_full = False
+            self.moves_to_execute.clear()
+            self.executed_moves.clear()
+            self.current_scramble = list(self.auto_move_scramble)
 
     def run_solve(self):
         if not self.visual_cube.moves_queue:
@@ -287,47 +345,75 @@ class SolverPage(Entity):
             
             full_solution = self.active_solver.solve()
 
-            if full_solution == ['All ready solved']:
-                self.status_text.text = "Cube is already solved!"
-                self.status_text.color = color.green
-                return
+            if full_solution:
+                if full_solution == ['All ready solved']:
+                    self.status_text.text = "Cube is already solved!"
+                    self.status_text.color = color.green
+                    return
 
-            if not full_solution or ['Error'] in full_solution:
-                self.status_text.text = 'Error: Could not find solution'
-                self.status_text.color = color.red
-                return
+                if not full_solution or ['Error'] in full_solution:
+                    self.status_text.text = 'Error: Could not find solution'
+                    self.status_text.color = color.red
+                    return
 
-            visual_ready_solution = []
-            for move in full_solution:
-                clean_move = move.replace("'", '"')
+                visual_ready_solution = []
+                for move in full_solution:
+                    clean_move = move.replace("'", '"')
+                    
+                    if '2' in clean_move:
+                        base = clean_move.replace('2', '')
+                        visual_ready_solution.append(base)
+                        visual_ready_solution.append(base)
+                    else:
+                        visual_ready_solution.append(clean_move)
+                self.current_solution = list(full_solution)
                 
-                if '2' in clean_move:
-                    base = clean_move.replace('2', '')
-                    visual_ready_solution.append(base)
-                    visual_ready_solution.append(base)
-                else:
-                    visual_ready_solution.append(clean_move)
+                ###
+                self.auto_moves = visual_ready_solution
+                solution_lines = []
+                
+                for i in range(0, len(full_solution), 15):
+                    part = full_solution[i:i + 15]
+                    solution_lines.append(' '.join(part))
+                
+                formatted_text = 'Solution:\n' + '\n'.join(solution_lines)
+                self.solution.text = formatted_text
+                ###
+                
+                self.auto_move_scramble.clear()
+                self.auto_move_scramble_full = False
+                
+                self.computed_solution_full = True
+                
+                print(f'Solution found!: {visual_ready_solution}')
+                self.status_text.text = f'Solving: {len(visual_ready_solution)} moves'
+                self.status_text.color = color.white
+                
+                self.status_text.text = f'Solved! Use left and right arrows \n to move through. \n Or press auto move.'
+                self.status_text.color = color.green
+                self.executed_moves.clear()
+                self.moves_to_execute = visual_ready_solution
+                
+                self.preference_text.enabled = True
+                self.yes_button.enabled = True
+                self.no_button.enabled = True
+    
+    def handle_export(self):
+        try:
+            data_manager.download_history()
+            self.status_text.text = f'Solve history generated! \n Check your folder.'
+            self.status_text.color = color.yellow
+        except Exception as e:
+            self.status_text.text = 'Error generating PDF...'
+            self.status_text.color = color.red
+            print(e)
+    
+    def record_preference(self, choice):
+        if not self.current_scramble and not self.current_solution:
+            self.status_text.text = 'Error: No data to save...'
             
-            ###
-            self.auto_moves = visual_ready_solution
-            solution_lines = []
-            
-            for i in range(0, len(full_solution), 15):
-                part = full_solution[i:i + 15]
-                solution_lines.append(' '.join(part))
-            
-            formatted_text = 'Solution:\n' + '\n'.join(solution_lines)
-            self.solution.text = formatted_text
-            ###
-            
-            print(f'Solution found!: {visual_ready_solution}')
-            self.status_text.text = f'Solving: {len(visual_ready_solution)} moves'
-            self.status_text.color = color.white
-            
-            self.visual_cube.moves_queue = visual_ready_solution
-            #self.visual_cube.process_queue()
-            
-            self.status_text.text = f'Solved! Use left and right arrows \n to move through.'
-            self.status_text.color = color.green
-            self.moves_to_execute = visual_ready_solution[::-1]
-            self.executed_moves.clear()
+        data_manager.save_solve(self.current_scramble, self.current_solution, choice)
+        
+        self.yes_button.enabled = False
+        self.no_button.enabled = False
+        self.preference_text.text = 'Saved to history!'

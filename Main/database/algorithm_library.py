@@ -10,7 +10,6 @@ def insert_methods_and_algorithm_categories():
     cursor = connection.cursor()
     
     cursor.execute('''INSERT OR IGNORE INTO Methods (Name) VALUES ('CFOP')''')
-    cursor.execute('''INSERT OR IGNORE INTO Methods (Name) VALUES ('ROUX')''')
     for category in ['OLL', 'PLL']:
         cursor.execute('''
         INSERT OR IGNORE INTO AlgorithmCategories (MethodID, Name)

@@ -123,11 +123,9 @@ class VisualCube(Entity):
             cubie.parent = scene # this makes the cubies new parent entity the current part of the environment they are in, the 'scene'
             cubie.position, cubie.rotation = world_position, world_rotation
         self.is_animating = False
-        # self.process_queue() # this should then trigger the next move - this is just for testing to see fi the program can execute each move one by one on its own, the later i will allow the user to go back and forth with how the cube moves when executing the moves for the computed solution
-    
-    def process_queue(self):
-        # if self.moves_queue and not self.is_animating:
-        for move in self.moves_queue:
+        
+    def update(self):
+        if not self.is_animating and len(self.moves_queue) > 0:
             temp_move = self.moves_queue.pop(0)
             self.execute_move(temp_move)
             
