@@ -50,15 +50,54 @@ An interactive 3D Rubik's Cube solver and educational suite developed as an **A-
     └── threed_cube.py        # Ursina entity creation and move animations
 
 ```
-Technical Highlights1. $A^*$ Search for White CrossThe CFOP solver utilizes an $A^*$ search algorithm to identify the optimal move sequence for the initial white cross within a depth limit ($\le 12$ moves).$$\text{Cost Function: } f(n) = g(n) + h(n)$$$g(n)$: Exact path cost from the scrambled state to state $n$.$h(n)$: Lower-bound heuristic counting misoriented or misplaced white edge pieces across the cube matrix.State Management: Closed sets backed by hash tables prevent cyclic exploration and duplicate search paths.2. Group Theory Move PruningFace movements are modeled as cyclic groups of order 4. Single-face rotation chains are reduced via modulo arithmetic:PlaintextFunction OptimiseMoves(moves):
-    For each adjacent pair of moves on the same face:
-        CombinedRotation = (Value(Move1) + Value(Move2)) MOD 4
-        Replace pair with CombinedRotation notation
-    Repeat until no further reduction is possible
-Installation & SetupRequirementsOperating System: Windows 10+ (recommended for Ursina/OpenGL support)Python: Version 3.10 or higherBuild Tools: Microsoft C++ Build Tools (required for compiling the kociemba C++ library)Step-by-Step SetupClone the Repository:Bashgit clone [https://github.com/your-username/rubiks-cube-solver.git](https://github.com/your-username/rubiks-cube-solver.git)
+
+## Installation & Setup
+
+### Requirements
+
+* **Operating System:** Windows 10+ (recommended for Ursina/OpenGL support)
+* **Python:** Version 3.10 or higher
+* **Build Tools:** Microsoft C++ Build Tools (required for compiling the `kociemba` C++ library)
+
+### Step-by-Step Setup
+
+#### 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-username/rubiks-cube-solver.git
 cd rubiks-cube-solver
-Create a Virtual Environment (Optional but Recommended):Bashpython -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-Install Dependencies:Bashpip install ursina numpy kociemba reportlab
-Run the Application:Bashpython main.py
-Usage GuideScramble: Click the Scramble button or press keyboard shortcuts to generate a randomized 25-move state.Select Method: Choose between CFOP (educational step-by-step) or Kociemba (move-optimal).Solve & Playback: Click Solve to execute the back-end algorithm. Use the step forward/backward buttons to inspect individual rotation steps for look-ahead practice.Export History: Navigate to the history tab to sort past solves by move count and generate an offline PDF report.
+```
+
+#### 2. Create a Virtual Environment
+
+Creating a virtual environment is optional but recommended.
+
+```bash
+python -m venv venv
+```
+
+On Windows, activate the virtual environment using:
+
+```bash
+venv\Scripts\activate
+```
+
+#### 3. Install Dependencies
+
+```bash
+pip install ursina numpy kociemba reportlab
+```
+
+#### 4. Run the Application
+
+```bash
+python main.py
+```
+
+## Usage Guide
+
+* **Scramble:** Click the **Scramble** button or use the available keyboard shortcuts to generate a randomized 25-move state.
+* **Select Method:** Choose between **CFOP** (educational step-by-step) or **Kociemba** (move-optimal).
+* **Solve & Playback:** Click **Solve** to execute the back-end algorithm. Use the step forward/backward buttons to inspect individual rotation steps for look-ahead practice.
+* **Export History:** Navigate to the **History** tab to sort past solves by move count and generate an offline PDF report.
+
