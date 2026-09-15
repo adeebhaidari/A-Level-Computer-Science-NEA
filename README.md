@@ -64,8 +64,8 @@ An interactive 3D Rubik's Cube solver and educational suite developed as an **A-
 #### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/rubiks-cube-solver.git
-cd rubiks-cube-solver
+git clone https://github.com/adeebhaidari/A-Level-Computer-Science-NEA.git
+cd A-Level-Computer-Science-NEA
 ```
 
 #### 2. Create a Virtual Environment
